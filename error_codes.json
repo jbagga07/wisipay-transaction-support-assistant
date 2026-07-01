@@ -1,0 +1,257 @@
+{
+  "meta": {
+    "title": "WisiPay Transaction Status & Error Code Dictionary",
+    "version": "1.2.0",
+    "description": "Canonical reference for all status codes and error codes used in WisiPay transaction processing. Covers both terminal states and intermediate/transitional states.",
+    "last_updated": "2026-05-01",
+    "note": "SAMPLE / DUMMY DATA — FOR ASSESSMENT USE ONLY"
+  },
+
+  "categories": {
+    "SUCCESS_STATES":   "Terminal success states — transaction completed as intended",
+    "PENDING_STATES":   "Non-terminal states — transaction is still in-flight; do not retry without checking current state",
+    "FAILURE_STATES":   "Terminal failure states — transaction will not be re-attempted automatically",
+    "TRANSIENT_STATES": "Operational states — used internally during retry/hold workflows; never the final state"
+  },
+
+  "error_codes": [
+
+    {
+      "code": "SUCCESS",
+      "category": "SUCCESS_STATES",
+      "http_analog": 200,
+      "severity": "none",
+      "description": "The transaction was processed successfully by the provider and funds have been transferred.",
+      "user_facing_message": "Your payment was successful.",
+      "resolution_hint": "No action required.",
+      "retryable": false,
+      "provider_triggered": false
+    },
+
+    {
+      "code": "REVERSED",
+      "category": "SUCCESS_STATES",
+      "http_analog": 200,
+      "severity": "info",
+      "description": "A previously successful transaction was reversed and funds returned to the initiator. This can be initiated by the user, the beneficiary's bank, or WisiPay compliance.",
+      "user_facing_message": "This transaction has been reversed. Funds will be credited back to your account within 1–3 business days.",
+      "resolution_hint": "Check your bank statement after 3 business days. Contact support if funds are not received.",
+      "retryable": false,
+      "provider_triggered": true
+    },
+
+    {
+      "code": "PENDING",
+      "category": "PENDING_STATES",
+      "http_analog": 202,
+      "severity": "info",
+      "description": "The transaction request has been accepted and submitted to the provider but final confirmation has not yet been received. This is a generic pending state.",
+      "user_facing_message": "Your payment is being processed. We'll notify you once it's confirmed.",
+      "resolution_hint": "Wait for the webhook callback or poll the transaction status endpoint. Do not resubmit.",
+      "retryable": false,
+      "provider_triggered": false
+    },
+
+    {
+      "code": "P102",
+      "category": "PENDING_STATES",
+      "http_analog": 202,
+      "severity": "info",
+      "description": "Pending — the provider has received the request and is awaiting confirmation from the beneficiary's bank. Common on IMPS and NEFT rails where inter-bank settlement takes additional time.",
+      "user_facing_message": "Your payment is awaiting confirmation from the recipient's bank. This usually takes a few minutes.",
+      "resolution_hint": "Poll the status endpoint after 5 minutes. If still P102 after 2 hours, escalate to support.",
+      "retryable": false,
+      "provider_triggered": true
+    },
+
+    {
+      "code": "P201",
+      "category": "PENDING_STATES",
+      "http_analog": 202,
+      "severity": "warning",
+      "description": "Pending — the provider's backend systems are under scheduled or emergency maintenance. The transaction has been queued and will be retried automatically when the provider comes back online.",
+      "user_facing_message": "The payment service is temporarily under maintenance. Your transaction has been queued and will be processed automatically. No action needed.",
+      "resolution_hint": "Monitor the provider's status page. The auto-retry window is 30 minutes. If the transaction does not resolve within 1 hour, escalate.",
+      "retryable": false,
+      "provider_triggered": true
+    },
+
+    {
+      "code": "P203",
+      "category": "PENDING_STATES",
+      "http_analog": 202,
+      "severity": "warning",
+      "description": "Pending — the transaction has been flagged for AML (Anti-Money Laundering) or KYC (Know Your Customer) compliance screening. It will not proceed until the compliance check is cleared.",
+      "user_facing_message": "Your payment is under a compliance review. This may take up to 24 hours. You will be notified of the outcome.",
+      "resolution_hint": "Do not retry. The compliance team will review manually. If unresolved after 24 hours, open a support ticket with the TXN_ID.",
+      "retryable": false,
+      "provider_triggered": false
+    },
+
+    {
+      "code": "FAILED",
+      "category": "FAILURE_STATES",
+      "http_analog": 500,
+      "severity": "error",
+      "description": "Generic failure returned by the provider without a more specific error code. The transaction was not completed. Use provider_responses.log to retrieve the raw provider message for diagnosis.",
+      "user_facing_message": "Your payment could not be processed. Please try again or use a different payment method.",
+      "resolution_hint": "Check provider_responses.log for the raw error message. Retry once if the cause is unclear. If the failure persists, contact the payment provider.",
+      "retryable": true,
+      "provider_triggered": true
+    },
+
+    {
+      "code": "F207",
+      "category": "FAILURE_STATES",
+      "http_analog": 402,
+      "severity": "error",
+      "description": "Failed — the source account does not have sufficient funds to cover the transaction amount. The provider rejected the request after a balance check.",
+      "user_facing_message": "Payment failed: insufficient balance in your account. Please add funds and try again.",
+      "resolution_hint": "User should top up the source account. Do not retry with the same account until balance is confirmed. Consider suggesting a lower amount.",
+      "retryable": false,
+      "provider_triggered": true
+    },
+
+    {
+      "code": "F311",
+      "category": "FAILURE_STATES",
+      "http_analog": 400,
+      "severity": "error",
+      "description": "Failed — the beneficiary account number or VPA (UPI ID) provided is invalid, does not exist, or has been closed. The provider could not resolve the destination.",
+      "user_facing_message": "Payment failed: the recipient's account details appear to be invalid or inactive. Please verify and try again.",
+      "resolution_hint": "Ask the user to double-check the beneficiary account number, IFSC code, or UPI ID. Re-validate against the bank's account verification API before re-attempting.",
+      "retryable": false,
+      "provider_triggered": true
+    },
+
+    {
+      "code": "F400",
+      "category": "FAILURE_STATES",
+      "http_analog": 400,
+      "severity": "error",
+      "description": "Failed — the request sent to the provider was malformed or contained invalid data. Common causes: missing required fields (e.g., amount, currency, beneficiary), unsupported currency, or data type mismatch.",
+      "user_facing_message": "Payment failed due to an issue with the request. Please check your details and try again.",
+      "resolution_hint": "Inspect the request payload in provider_responses.log. Common fixes: ensure amount is non-null, currency is INR, and all required fields are populated. This is usually a client-side or integration bug.",
+      "retryable": false,
+      "provider_triggered": false
+    },
+
+    {
+      "code": "F401",
+      "category": "FAILURE_STATES",
+      "http_analog": 401,
+      "severity": "critical",
+      "description": "Failed — the request was rejected by the provider due to authentication or authorisation failure. Causes include expired API keys, invalid signatures, or a revoked access token.",
+      "user_facing_message": "Payment failed due to an authentication error. Please log out and log back in, then try again.",
+      "resolution_hint": "Check if the provider API key/token has expired or been rotated. Rotate credentials and re-test. If user-session related, issue a new auth token. Alert the engineering team — this may indicate a misconfiguration.",
+      "retryable": false,
+      "provider_triggered": false
+    },
+
+    {
+      "code": "F402",
+      "category": "FAILURE_STATES",
+      "http_analog": 402,
+      "severity": "error",
+      "description": "Failed — the transaction amount would cause the user to exceed their daily or monthly transaction limit as configured by the provider or RBI regulations.",
+      "user_facing_message": "Payment failed: this transaction exceeds your daily/monthly transfer limit. Please try a smaller amount or wait until your limit resets.",
+      "resolution_hint": "Inform the user of their current limit and reset time. If the limit is incorrectly set, the user may need to complete KYC upgrade. Do not retry without reducing the amount.",
+      "retryable": false,
+      "provider_triggered": true
+    },
+
+    {
+      "code": "F403",
+      "category": "FAILURE_STATES",
+      "http_analog": 403,
+      "severity": "critical",
+      "description": "Failed — the transaction was blocked by the provider's fraud detection engine. This may indicate suspicious activity, a flagged beneficiary account, or a pattern-match on known fraud vectors.",
+      "user_facing_message": "This payment has been blocked for security reasons. If you believe this is a mistake, please contact support.",
+      "resolution_hint": "Do not retry automatically — repeated attempts on a blocked transaction may escalate the fraud flag. Escalate to the compliance/fraud team with the TXN_ID. The provider may require manual clearance.",
+      "retryable": false,
+      "provider_triggered": true
+    },
+
+    {
+      "code": "F500",
+      "category": "FAILURE_STATES",
+      "http_analog": 500,
+      "severity": "error",
+      "description": "Failed — the provider encountered an internal server error while processing the request. The transaction was not completed. This is a provider-side fault, not a client error.",
+      "user_facing_message": "Payment failed due to a temporary issue with the payment provider. Please try again in a few minutes.",
+      "resolution_hint": "Retry once with exponential backoff. If the error persists, switch to an alternate provider. Monitor provider status page. Log for SLA tracking.",
+      "retryable": true,
+      "provider_triggered": true
+    },
+
+    {
+      "code": "F502",
+      "category": "FAILURE_STATES",
+      "http_analog": 502,
+      "severity": "error",
+      "description": "Failed — the provider gateway received an invalid response from an upstream bank or clearing system. This typically indicates an outage or connectivity issue in the banking network, not with WisiPay or the immediate provider.",
+      "user_facing_message": "Payment failed due to a network issue between our payment provider and your bank. Please try again shortly.",
+      "resolution_hint": "Retry with backoff (suggested: 30s, 90s). Check if the upstream bank has a reported outage. Switch rails (e.g., UPI → IMPS) if the issue is rail-specific.",
+      "retryable": true,
+      "provider_triggered": true
+    },
+
+    {
+      "code": "F503",
+      "category": "FAILURE_STATES",
+      "http_analog": 503,
+      "severity": "error",
+      "description": "Failed — the provider service is temporarily unavailable, typically due to maintenance or overload. The request was not processed.",
+      "user_facing_message": "The payment service is temporarily unavailable. Please try again in a few minutes.",
+      "resolution_hint": "Retry after 2–5 minutes. If scheduled maintenance, hold the transaction queue and resume after the maintenance window. Check provider status page.",
+      "retryable": true,
+      "provider_triggered": true
+    },
+
+    {
+      "code": "TIMEOUT",
+      "category": "TRANSIENT_STATES",
+      "http_analog": 408,
+      "severity": "warning",
+      "description": "The WisiPay backend did not receive any response from the provider within the configured timeout window (default: 5000ms). The transaction state is UNKNOWN — it may or may not have been processed by the provider.",
+      "user_facing_message": "Your payment is taking longer than expected. We are checking the status — please do not submit again.",
+      "resolution_hint": "CRITICAL: Do not mark as FAILED immediately. Query the provider's status API using PROVIDER_REF before deciding. If the provider confirms no record, mark FAILED and allow retry. If confirmed, mark SUCCESS or REVERSED accordingly.",
+      "retryable": "conditional",
+      "provider_triggered": false
+    },
+
+    {
+      "code": "RETRY",
+      "category": "TRANSIENT_STATES",
+      "http_analog": null,
+      "severity": "info",
+      "description": "An internal state indicating that the transaction is being re-submitted to the provider after a TIMEOUT or transient provider error (F500, F502, F503). The RETRY state is always followed by a terminal or pending state.",
+      "user_facing_message": "We're re-processing your payment — please wait.",
+      "resolution_hint": "Ensure idempotency: use the same TXN_ID on retry to prevent double-charging. Maximum retry attempts: 3. After 3 failures, mark as FAILED and notify the user.",
+      "retryable": true,
+      "provider_triggered": false
+    },
+
+    {
+      "code": "HOLD",
+      "category": "TRANSIENT_STATES",
+      "http_analog": 202,
+      "severity": "warning",
+      "description": "The transaction has been placed on manual hold, either by the WisiPay compliance team, the provider's fraud engine, or as a result of a P203 compliance check escalating to manual review. Funds are reserved but not transferred.",
+      "user_facing_message": "Your payment is on hold pending a review. You will be notified within 24 hours.",
+      "resolution_hint": "Assign to the compliance queue. The reviewer should either APPROVE (which resumes the transaction) or REJECT (which triggers a reversal and notifies the user). SLA: resolve within 24 hours.",
+      "retryable": false,
+      "provider_triggered": false
+    }
+
+  ],
+
+  "quick_reference": {
+    "terminal_success":  ["SUCCESS", "REVERSED"],
+    "terminal_failure":  ["FAILED", "F207", "F311", "F400", "F401", "F402", "F403", "F500", "F502", "F503"],
+    "non_terminal":      ["PENDING", "P102", "P201", "P203", "TIMEOUT", "RETRY", "HOLD"],
+    "retryable":         ["FAILED", "F500", "F502", "F503", "RETRY"],
+    "conditional_retry": ["TIMEOUT"],
+    "never_retry":       ["F207", "F311", "F400", "F401", "F402", "F403", "HOLD", "P203"]
+  }
+}

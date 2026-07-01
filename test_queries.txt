@@ -1,0 +1,216 @@
+================================================================================
+  WISIPAY ASSESSMENT 1 — TEST QUERIES
+  Agentic Query System Evaluation
+================================================================================
+
+Instructions
+------------
+
+These 18 queries are to be run against the agentic system you have built.
+For each query, paste the exact question into your system and record the full
+response it produces. Submit your responses in a file named:
+
+    YourName_TestResponses.txt
+
+Use the same question numbers. Do not modify the questions.
+Data sources are in the Assessment_1 folder alongside this file.
+
+================================================================================
+
+Q1.
+How many unique transaction IDs are recorded in the system between May 1 and May 4, 2026?
+Answer:
+----------------------------------------
+There are 70 unique transaction IDs recorded between May 1 and May 4, 2026.
+--------------------------------------------------------------------------------
+
+Q2.
+What is the final status of TXN10006, and what concern does it raise about the health of this transaction?
+----------------------------------------
+Answer:
+----------------------------------------
+The final status of transaction TXN10006 is P102. This indicates that the transaction is pending, as the provider has received the request and is awaiting confirmation from the beneficiary's bank.
+--------------------------------------------------------------------------------
+
+Q3.
+Which transactions were flagged and blocked by the fraud detection engine? Who initiated them, and what amounts were involved?
+Answer:
+----------------------------------------
+The following transactions were flagged and blocked:
+
+*   **TXN10034**: Initiated by Ritu Kapoor for 3,350.00 INR.
+*   **TXN10043**: Initiated by Deepak Verma for 13,400.00 INR.
+*   **TXN10065**: Initiated by Deepak Verma for 3,750.00 INR.
+--------------------------------------------------------------------------------
+
+Q4.
+How many transactions did Rohan Mehta initiate in total? Provide a breakdown of outcomes — how many succeeded, how many failed, and are any still unresolved?
+Answer:
+----------------------------------------
+Rohan Mehta initiated a total of 9 transactions.
+
+Here is the breakdown of the outcomes:
+- Succeeded: 7
+- Failed: 1 (Error code: F207)
+- Unresolved (Pending): 1
+--------------------------------------------------------------------------------
+
+Q5.
+A transaction was submitted with an amount in USD instead of INR. Identify the transaction, explain what the provider returned, and state the correct user-facing error message that should be displayed.
+
+--------------------------------------------------------------------------------
+
+Q6.
+Describe the complete journey of TXN10039 — how many attempts were made, which provider handled it, what the latency was per attempt, and why did it ultimately fail?
+Answer:
+----------------------------------------
+Transaction TXN10039 was handled by the provider NPCI_UPI. There were 3 attempts made, all of which resulted in a timeout (Error Code 408).
+
+The latency per attempt was as follows:
+*   **Attempt 1:** 5001 ms
+*   **Attempt 2:** 5003 ms
+*   **Attempt 3:** 5000 ms
+
+The transaction ultimately failed because the requests timed out, with the final provider response stating "Retry attempt 2: request timed out; aborting."
+--------------------------------------------------------------------------------
+
+Q7.
+Which user initiated the most failed transactions (counting all failure-type final statuses combined)? What was their overall success rate?
+Answer:
+----------------------------------------
+Vikram Nair initiated the most failed transactions, with a total of 5 (including statuses REVERSED, TIMEOUT, and FAILED). The available data is not enough to determine their overall success rate.
+--------------------------------------------------------------------------------
+
+Q8.
+What does error code F311 mean? List every transaction in the dataset that received F311 as its final status, including initiator, beneficiary, and amount for each.
+Answer:
+----------------------------------------
+Error code F311 means the payment failed because the beneficiary account number or VPA (UPI ID) provided is invalid, does not exist, or has been closed, and the provider could not resolve the destination.
+
+Here are the transactions that received the F311 status:
+
+*   **Initiator:** Karan Shah, **Beneficiary:** Rohan Mehta, **Amount:** 1200.00 INR
+*   **Initiator:** Karan Shah, **Beneficiary:** Vikram Nair, **Amount:** 2200.00 INR
+*   **Initiator:** Meera Patel, **Beneficiary:** Rohan Mehta, **Amount:** 480.50 INR
+*   **Initiator:** Ritu Kapoor, **Beneficiary:** (Not provided), **Amount:** 250.00 INR
+*   **Initiator:** Sneha Joshi, **Beneficiary:** Arjun Sharma, **Amount:** 2600.00 INR
+--------------------------------------------------------------------------------
+
+Q9.
+How many transactions are currently in a non-terminal state (PENDING, P102, P203, or HOLD)? List each one with its TXN_ID, initiator, amount, and current status.
+Answer:
+----------------------------------------
+There are 11 transactions currently in a non-terminal state:
+
+1. **TXN10004**: Vikram Nair, 10,000.00 INR, PENDING
+2. **TXN10006**: Sneha Joshi, 4200.00 INR, P102
+3. **TXN10012**: Rohan Mehta, 5000.00 INR, PENDING
+4. **TXN10016**: Vikram Nair, 4750.00 INR, P102
+5. **TXN10019**: Rohan Mehta, 18000.00 INR, PENDING
+6. **TXN10024**: Ritu Kapoor, 12500.00 INR, P203
+7. **TXN10028**: Vikram Nair, 6800.00 INR, P102
+8. **TXN10034**: Ritu Kapoor, 3350.00 INR, HOLD
+9. **TXN10043**: Deepak Verma, 13400.00 INR, HOLD
+10. **TXN10051**: Rohan Mehta, 11000.00 INR, P102
+11. **TXN10065**: Deepak Verma, 3750.00 INR, HOLD
+--------------------------------------------------------------------------------
+
+Q10.
+A transaction was submitted with a missing amount field. Using data from the performance metrics and provider response logs, explain at which point in the pipeline the failure occurred and how you can tell.
+
+--------------------------------------------------------------------------------
+
+Q11.
+Which transactions were reversed between May 1 and May 4? What is the total INR value that was reversed across all four transactions?
+Answer:
+----------------------------------------
+The following transactions were reversed between May 1 and May 4:
+
+- TXN10010: Vikram Nair to Karan Shah (15,000.00 INR)
+- TXN10020: Sneha Joshi to Karan Shah (505.00 INR)
+- TXN10047: Meera Patel to Sneha Joshi (1,580.00 INR)
+- TXN10069: Vikram Nair to Karan Shah (7,900.00 INR)
+
+The total reversed value across these four transactions is 24,985.00 INR.
+
+--------------------------------------------------------------------------------
+
+Q12.
+There is a data quality anomaly in the transaction ID of one record in the log file. Identify it. How would a case-sensitive lookup behave, and how should a robust system handle this?
+
+--------------------------------------------------------------------------------
+
+Q13.
+How many transactions required at least one retry and ultimately succeeded? List them, including the initial error code that triggered the retry and which provider handled each one.
+----------------------------------------
+Answer:
+----------------------------------------
+There are 6 transactions that required at least one retry and ultimately succeeded:
+
+*   **TXN10022**: Initial Error Code 408 (RAZORPAY)
+*   **TXN10030**: Initial Error Code 500 (PAYU)
+*   **TXN10042**: Initial Error Code 502 (AXIS_PG)
+*   **TXN10052**: Initial Error Code 503 (HDFC_PG)
+*   **TXN10058**: Initial Error Code 408 (PAYU)
+*   **TXN10062**: Initial Error Code 202 (ICICI_PG)
+
+--------------------------------------------------------------------------------
+
+Q14.
+A user attempted to send money to themselves. Which transaction was it, what did the provider return, and what does this suggest about a missing validation step in the system?
+
+--------------------------------------------------------------------------------
+
+Q15.
+What is the highest-value transaction currently in a non-terminal state? According to the error code dictionary, what specific action should be taken for it — and does the time elapsed since it was created affect that action?
+Answer:
+----------------------------------------
+The highest-value transaction currently in a non-terminal state is TXN10019, with an amount of 18,000.00 INR and a status of PENDING.
+
+According to the error code dictionary, the specific action to be taken for a PENDING status is to wait for the webhook callback or poll the transaction status endpoint, and not to resubmit. The provided data does not indicate that the time elapsed since its creation affects this action.
+--------------------------------------------------------------------------------
+
+Q16.
+On which date were the most unique transactions initiated? Provide a day-by-day count across all four days in the dataset.
+Ask your question: On which date were the most unique transactions initiated? Provide a day-by-day count across all four days in the dataset.
+
+----------------------------------------
+Answer:
+----------------------------------------
+I could not find any matching data for your question.
+--------------------------------------------------------------------------------
+
+Q17.
+What is the difference between error codes F500, F502, and F503 according to the error dictionary? Which specific transactions in the dataset experienced each of these codes as an intermediate state before ultimately succeeding?
+Answer:
+----------------------------------------
+The differences between the error codes are as follows:
+
+*   **F500**: An internal server error occurred at the provider while processing the request.
+*   **F502**: The provider gateway received an invalid response from an upstream bank or clearing system, typically indicating a network or connectivity issue.
+*   **F503**: The provider service is temporarily unavailable, usually due to overload or maintenance.
+
+The specific transactions that experienced these codes as an intermediate state before ultimately succeeding are:
+
+*   **F500**: TXN10030
+*   **F502**: TXN10042
+*   **F503**: TXN10052
+
+
+--------------------------------------------------------------------------------
+
+Q18.
+According to the error code dictionary, what must the system do when it encounters a TIMEOUT status? Why is it dangerous to immediately mark a TIMEOUT transaction as FAILED, and which transactions in the dataset illustrate this risk?
+Answer:
+----------------------------------------
+When a TIMEOUT status is encountered, the system must not mark the transaction as FAILED immediately. Instead, it must query the provider's status API using the PROVIDER_REF. If the provider confirms there is no record, the transaction can be marked as FAILED and a retry allowed; otherwise, it should be marked as SUCCESS or REVERSED.
+
+It is dangerous to mark a TIMEOUT transaction as FAILED immediately because the transaction state is UNKNOWN—the payment may or may not have been processed by the provider.
+
+The following transactions in the dataset illustrate this risk:
+- TXN10022 (Arjun Sharma to Meera Patel, 870.00 INR)
+- TXN10039 (Vikram Nair to Arjun Sharma, 1750.00 INR)
+- TXN10058 (Vikram Nair to Ananya Iyer, 3100.00 INR)
+================================================================================
+  END OF QUERIES
+================================================================================
