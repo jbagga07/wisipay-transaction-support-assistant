@@ -1,29 +1,22 @@
-'''. retrieve(query_json)	Master function	All
 
-'''
 from datetime import datetime
 import json
 import os
+
 DATA_DIR = os.path.dirname(os.path.abspath(__file__))
-
-
 TRANSACTION_FILE = os.path.join(DATA_DIR, "transactions.log")
-
 PROVIDER_RESPONSE_FILE = os.path.join(
     DATA_DIR,
     "provider_responses.log"
 )
-
 PERF_METRICS_FILE = os.path.join(
     DATA_DIR,
     "perf_metrics.log"
 )
-
 ERROR_CODES_FILE = os.path.join(
     DATA_DIR,
     "error_codes.json"
 )
-
 
 
 '''
@@ -280,6 +273,73 @@ def query_transactions(filters):
 
     return results
 
+
+def query_transaction_history(filters):
+    """
+    Retrieves complete transaction histories that contain all requested
+    statuses in the same order.
+
+    Example:
+
+    filters["status"] = ["TIMEOUT", "SUCCESS"]
+
+    Matches:
+
+    TIMEOUT -> RETRY -> SUCCESS
+
+    Does NOT match:
+
+    SUCCESS -> TIMEOUT
+    """
+
+    # Read every transaction from the log
+    all_transactions = []
+    print("\nReading from:", TRANSACTION_FILE)
+    with open(TRANSACTION_FILE, "r", encoding="utf-8") as file:
+
+        for line in file:
+
+            transaction = parse_log_line(line)
+
+            if transaction is not None:
+                all_transactions.append(transaction)
+    print("Total rows read:", len(all_transactions))
+    # Group rows by transaction ID
+    grouped_transactions = group_by_txn_id(all_transactions)
+
+    matching_transactions = []
+
+    required_statuses = filters.get("status")
+
+    # No history requested
+    if not required_statuses:
+        return []
+
+    # Check every transaction history
+    for txn_history in grouped_transactions.values():
+
+        history_statuses = []
+
+        for row in txn_history:
+
+            status = row.get("status")
+
+            if status:
+                history_statuses.append(status)
+
+        # Check whether required statuses appear in order
+        index = 0
+
+        for status in history_statuses:
+
+            if status == required_statuses[index]:
+                index += 1
+
+                if index == len(required_statuses):
+                    matching_transactions.extend(txn_history)
+                    break
+
+    return matching_transactions
 
 '''
 deduplicate_transactions(rows)
@@ -591,20 +651,27 @@ Then returns a dictionary like:
   "perf_metrics": [...]
 }
 '''
-def retrieve(query):
-    filters = query.get("filters", {})
 
-    if all(value is None for value in filters.values()):
+def retrieve(query):
+      # Get intent from Layer 1
+    intent = query.get("intent")
+
+    # Reject non-transaction / unsupported questions
+    if intent == "invalid":
         return {}
+
     results = {}
+    filters = query.get("filters", {})
 
     sources = query.get("sources", [])
 
     filters = query.get("filters", {})
-
     if "transactions" in sources:
 
-        transactions = query_transactions(filters)
+        if query.get("intent") == "transaction_history":
+            transactions = query_transaction_history(filters)
+        else:
+            transactions = query_transactions(filters)
 
         if (
             query.get("intent") == "count_transactions"
@@ -612,8 +679,8 @@ def retrieve(query):
         ):
             transactions = deduplicate_transactions(transactions)
 
-        results["transactions"] = transactions
 
+        results["transactions"] = transactions
     if "provider_responses" in sources:
 
         txn_ids = get_txn_ids(results)
@@ -622,6 +689,7 @@ def retrieve(query):
             filters,
             txn_ids
         )
+
 
     if "perf_metrics" in sources:
 
@@ -653,3 +721,31 @@ def retrieve(query):
 # ==========================================================
 # TESTING LAYER 2
 # ==========================================================
+if __name__ == "__main__":
+
+    # Example query JSON (normally produced by Layer 1)
+    query = {
+    "intent": "transaction_history",
+    "filters": {
+        "txn_id": None,
+        "initiator": None,
+        "beneficiary": None,
+        "status": [
+            "TIMEOUT",
+            "SUCCESS"
+        ],
+        "date_from": None,
+        "date_to": None,
+        "amount_min": None,
+        "amount_max": None
+    },
+    "sources": [
+        "transactions"
+    ],
+    "output_type": "list"
+}
+
+    results = retrieve(query)
+
+    print("\n========== Layer 2 Output ==========\n")
+    print(json.dumps(results, indent=4))

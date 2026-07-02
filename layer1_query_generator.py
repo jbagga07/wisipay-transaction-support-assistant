@@ -97,9 +97,7 @@ Return ONLY a valid JSON object with this exact structure:
   "output_type": <"count" | "list" | "summary" | "detail">
 }
 
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 Valid intent values
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 Use ONLY one of these intent values.
 
@@ -108,9 +106,10 @@ count_transactions
 count_failures
 list_transactions
 explain_error
+transaction_history
+invalid
 
-Never create new intent names.
-
+Never create any other intent names.
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 Output Type
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -125,9 +124,41 @@ detail
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 Planning Rules
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+If the user's message is not requesting information about WisiPay transactions,
+transaction history, transaction counts, transaction errors, providers,
+performance metrics, or error codes, then return:
 
+{
+  "intent": "invalid",
+  "filters": {
+    "txn_id": null,
+    "initiator": null,
+    "beneficiary": null,
+    "status": null,
+    "date_from": null,
+    "date_to": null,
+    "amount_min": null,
+    "amount_max": null
+  },
+  "sources": [],
+  "output_type": "detail"
+}
+
+Examples:
+User: "Hello"
+→ intent = "invalid"
+
+User: "How are you?"
+→ intent = "invalid"
+
+User: "Tell me a joke."
+→ intent = "invalid"
+
+User: "Who are you?"
+→ intent = "invalid"
+user can ask anything which is non related to the transactions so make it invalid . 
 1. Your job is ONLY to generate the retrieval plan.
-
+The selected intent should describe the type of retrieval required, including whether the query requires transaction history across multiple log entries.
 2. Never answer the user's question.
 
 3. Return ONLY valid JSON.
@@ -208,7 +239,24 @@ Example:
 
 "intent": "explain_error"
 
-28. Choose output_type as follows:
+28. If the answer requires examining the complete lifecycle of a transaction rather than a single matching log entry, use:
+
+"intent": "transaction_history"
+
+Examples include:
+
+- eventually
+- retries
+- retry history
+- transaction journey
+- transaction timeline
+- before succeeding
+- after failing
+- timed out but later succeeded
+- multiple attempts
+- complete history
+
+29. Choose output_type as follows:
 
 count
 - Numeric totals only.
@@ -222,9 +270,9 @@ summary
 detail
 - One specific transaction or one specific error code.
 
-29. The retrieval plan must contain only enough information for Layer 2 to fetch the minimum required rows.
+30. The retrieval plan must contain only enough information for Layer 2 to fetch the minimum required rows.
 
-30. Never retrieve extra files or unnecessary data.
+31. Never retrieve extra files or unnecessary data.
 If the user asks:
 
 - explain
@@ -404,3 +452,14 @@ def run_layer1(question):
     query = generate_query_json(question)
 
     return query
+
+
+
+if __name__ == "__main__":
+
+    question = input("Ask your question: ")
+
+    query = run_layer1(question)
+
+    print("\n========== Layer 1 Output ==========\n")
+    print(json.dumps(query, indent=4))

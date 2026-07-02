@@ -57,6 +57,10 @@ Here is the breakdown of the outcomes:
 
 Q5.
 A transaction was submitted with an amount in USD instead of INR. Identify the transaction, explain what the provider returned, and state the correct user-facing error message that should be displayed.
+The transaction submitted with an amount in USD instead of INR is **TXN10031**.
+
+*   **Provider Response:** The provider (HDFC_PG) returned a response code of `400` with the message: "Bad request: unsupported currency USD".
+*   **User-Facing Error Message:** "Payment failed due to an issue with the request. Please check your details and try again."
 
 --------------------------------------------------------------------------------
 
@@ -118,6 +122,14 @@ There are 11 transactions currently in a non-terminal state:
 Q10.
 A transaction was submitted with a missing amount field. Using data from the performance metrics and provider response logs, explain at which point in the pipeline the failure occurred and how you can tell.
 
+The failure occurred at the provider level.
+
+Transaction **TXN10025** was submitted with a missing amount field, which resulted in a failure. This is evident from the following data:
+
+*   **Transaction Data:** The amount field for TXN10025 is empty.
+*   **Provider Response Logs:** The provider (HDFC_PG) returned a `resp_code: 400` with the message: `"Bad request: amount field is null or missing"`.
+*   **Performance Metrics:** The request to the endpoint `/api/v2/payment/pg/hdfc` returned an `http_status: 400`.
+*   **Error Code Information:** The transaction is marked with status `F400`, which is defined as a failure where the request sent to the provider was malformed or contained invalid data, specifically mentioning missing required fields like the amount.
 --------------------------------------------------------------------------------
 
 Q11.
@@ -158,7 +170,11 @@ There are 6 transactions that required at least one retry and ultimately succeed
 
 Q14.
 A user attempted to send money to themselves. Which transaction was it, what did the provider return, and what does this suggest about a missing validation step in the system?
+The transaction where a user attempted to send money to themselves was **TXN10014**, where the initiator and beneficiary were both **Karan Shah**.
 
+The provider (RAZORPAY) returned a response code of **400** with the message: **"Self-transfer not permitted"**.
+
+This suggests that the system is missing a validation step to prevent self-transfers before the request is sent to the provider.
 --------------------------------------------------------------------------------
 
 Q15.
@@ -177,7 +193,13 @@ Ask your question: On which date were the most unique transactions initiated? Pr
 ----------------------------------------
 Answer:
 ----------------------------------------
-I could not find any matching data for your question.
+The most unique transactions were initiated on 2026-05-01.
+
+Here is the day-by-day count:
+- 2026-05-01: 20 transactions
+- 2026-05-02: 20 transactions
+- 2026-05-03: 14 transactions
+- 2026-05-04: 16 transactions
 --------------------------------------------------------------------------------
 
 Q17.

@@ -102,7 +102,6 @@ Query Plan:
 Retrieved Data:
 
 {json.dumps(retrieved_data, separators=(",", ":"))}
-
 Generate the final response using ONLY the retrieved data.
 
 If no matching records exist,
@@ -112,3 +111,5 @@ Do not invent any information.
 """
 
     return llm_call(RESPONDER_SYSTEM, user_message)
+
+
