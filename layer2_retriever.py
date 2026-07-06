@@ -1,9 +1,11 @@
 
 from datetime import datetime
 import json
+import logging
 import os
 
 DATA_DIR = os.path.dirname(os.path.abspath(__file__))
+
 TRANSACTION_FILE = os.path.join(DATA_DIR, "transactions.log")
 PROVIDER_RESPONSE_FILE = os.path.join(
     DATA_DIR,
@@ -17,7 +19,6 @@ ERROR_CODES_FILE = os.path.join(
     DATA_DIR,
     "error_codes.json"
 )
-
 
 '''
 parse_log_line(line)
@@ -274,6 +275,25 @@ def query_transactions(filters):
     return results
 
 
+def matches_identity(txn_id, txn_history, filters):
+    # txn_id filter exists and does not match
+    if filters.get("txn_id") is not None:
+        if txn_id.upper() != filters["txn_id"].upper():
+            return False
+
+    # initiator filter exists and does not match any row in that transaction history
+    if filters.get("initiator") is not None:
+        if not any(row.get("initiator", "").lower() == filters["initiator"].lower() for row in txn_history):
+            return False
+
+    # beneficiary filter exists and does not match any row in that transaction history
+    if filters.get("beneficiary") is not None:
+        if not any(row.get("beneficiary", "").lower() == filters["beneficiary"].lower() for row in txn_history):
+            return False
+
+    return True
+
+
 def query_transaction_history(filters):
     """
     Retrieves complete transaction histories that contain all requested
@@ -294,7 +314,7 @@ def query_transaction_history(filters):
 
     # Read every transaction from the log
     all_transactions = []
-    print("\nReading from:", TRANSACTION_FILE)
+    logging.debug("\nReading from: %s", TRANSACTION_FILE)
     with open(TRANSACTION_FILE, "r", encoding="utf-8") as file:
 
         for line in file:
@@ -303,7 +323,7 @@ def query_transaction_history(filters):
 
             if transaction is not None:
                 all_transactions.append(transaction)
-    print("Total rows read:", len(all_transactions))
+    logging.debug("Total rows read: %d", len(all_transactions))
     # Group rows by transaction ID
     grouped_transactions = group_by_txn_id(all_transactions)
 
@@ -316,7 +336,10 @@ def query_transaction_history(filters):
         return []
 
     # Check every transaction history
-    for txn_history in grouped_transactions.values():
+    for txn_id, txn_history in grouped_transactions.items():
+
+        if not matches_identity(txn_id, txn_history, filters):
+            continue
 
         history_statuses = []
 
@@ -444,6 +467,9 @@ Used to fetch provider responses or performance metrics for the same transaction
 def get_txn_ids(results):
 
     transactions = results.get("transactions", [])
+
+    if isinstance(transactions, dict):
+        return set()
 
     txn_ids = set()
 
@@ -660,8 +686,18 @@ def retrieve(query):
     if intent == "invalid":
         return {}
 
-    results = {}
     filters = query.get("filters", {})
+    has_filter = any(
+        value not in (None, "", [])
+        for value in filters.values()
+    )
+
+    if not has_filter and intent not in ("count_transactions", "count_failures", "transaction_history") and query.get("output_type") not in ("count", "summary"):
+        return {
+            "error": "Query too broad — please include a transaction ID, status, date range, or person."
+        }
+
+    results = {}
 
     sources = query.get("sources", [])
 
@@ -669,18 +705,56 @@ def retrieve(query):
     if "transactions" in sources:
 
         if query.get("intent") == "transaction_history":
-            transactions = query_transaction_history(filters)
+            if filters.get("txn_id") is not None and not filters.get("status"):
+                transactions = query_transactions(filters)
+            else:
+                transactions = query_transaction_history(filters)
+                if not transactions and filters.get("status"):
+                    transactions = query_transactions(filters)
         else:
             transactions = query_transactions(filters)
 
-        if (
-            query.get("intent") == "count_transactions"
-            or query.get("output_type") == "count"
-        ):
+        if query.get("intent") != "transaction_history":
             transactions = deduplicate_transactions(transactions)
 
+        output_type = query.get("output_type")
 
-        results["transactions"] = transactions
+        if query.get("intent") == "count_transactions":
+            if output_type == "count":
+                results["count"] = count_transactions(transactions)
+            elif output_type == "summary":
+                if filters.get("initiator") is not None or filters.get("beneficiary") is not None:
+                    results["summary"] = summarize_transactions(transactions)
+                    results["grouped_by_status"] = group_transactions_by_status(transactions)
+                elif filters.get("status") is not None:
+                    results["summary"] = group_transactions_by_initiator(transactions)
+                    results["grouped_by_initiator"] = group_transactions_by_initiator(transactions)
+                else:
+                    results["summary"] = group_transactions_by_date(transactions)
+                    results["grouped_by_date"] = group_transactions_by_date(transactions)
+            else:
+                results["transactions"] = transactions
+
+        elif query.get("intent") == "count_failures":
+            results["count"] = count_failures(transactions)
+
+        elif query.get("intent") == "list_transactions" and output_type == "summary":
+            results["total_amount"] = calculate_total_amount(transactions)
+            results["transactions"] = transactions
+
+        elif query.get("intent") == "lookup_transaction" and filters.get("txn_id") is None:
+            results["highest_amount_transaction"] = find_highest_amount(transactions)
+            results["lowest_amount_transaction"] = find_lowest_amount(transactions)
+            results["average_amount"] = calculate_average_amount(transactions)
+            results["transactions"] = transactions
+            results["sorted_by_amount_asc"] = sort_transactions_by_amount(transactions, descending=False)
+            results["sorted_by_amount_desc"] = sort_transactions_by_amount(transactions, descending=True)
+            results["sorted_by_date_asc"] = sort_transactions_by_date(transactions, descending=False)
+            results["sorted_by_date_desc"] = sort_transactions_by_date(transactions, descending=True)
+
+        else:
+            results["transactions"] = transactions
+    
     if "provider_responses" in sources:
 
         txn_ids = get_txn_ids(results)
@@ -703,6 +777,9 @@ def retrieve(query):
     if "error_codes" in sources:
 
         status_codes = get_status_codes(results)
+        if filters.get("status"):
+            for s in filters["status"]:
+                status_codes.add(s)
 
         results["error_codes"] = lookup_error_codes(
             status_codes
@@ -721,19 +798,150 @@ def retrieve(query):
 # ==========================================================
 # TESTING LAYER 2
 # ==========================================================
+
+# ==========================
+# COMPUTATION FUNCTIONS
+# ==========================
+
+def count_transactions(rows):
+    return {
+        "count": len(rows)
+    }
+
+def count_failures(rows):
+    failed_count = 0
+    for row in rows:
+        if row.get("status") == "FAILED":
+            failed_count += 1
+    return {
+        "failed_count": failed_count
+    }
+
+def group_transactions_by_date(rows):
+    grouped = {}
+    for row in rows:
+        timestamp = row.get("timestamp")
+        if timestamp:
+            date = timestamp.split()[0]
+            grouped[date] = grouped.get(date, 0) + 1
+    return grouped
+
+def group_transactions_by_status(rows):
+    grouped = {}
+    for row in rows:
+        status = row.get("status")
+        if status:
+            grouped[status] = grouped.get(status, 0) + 1
+    return grouped
+
+def group_transactions_by_initiator(rows):
+    grouped = {}
+    for row in rows:
+        initiator = row.get("initiator")
+        if initiator:
+            grouped[initiator] = grouped.get(initiator, 0) + 1
+    return grouped
+
+def group_transactions_by_beneficiary(rows):
+    grouped = {}
+    for row in rows:
+        beneficiary = row.get("beneficiary")
+        if beneficiary:
+            grouped[beneficiary] = grouped.get(beneficiary, 0) + 1
+    return grouped
+
+def find_highest_amount(rows):
+    highest_txn = None
+    highest_val = None
+    for row in rows:
+        val = parse_amount(row.get("amount", ""))
+        if val is not None:
+            if highest_val is None or val > highest_val:
+                highest_val = val
+                highest_txn = row
+    return highest_txn
+
+def find_lowest_amount(rows):
+    lowest_txn = None
+    lowest_val = None
+    for row in rows:
+        val = parse_amount(row.get("amount", ""))
+        if val is not None:
+            if lowest_val is None or val < lowest_val:
+                lowest_val = val
+                lowest_txn = row
+    return lowest_txn
+
+def calculate_total_amount(rows):
+    total = 0.0
+    for row in rows:
+        val = parse_amount(row.get("amount", ""))
+        if val is not None:
+            total += val
+    return {
+        "total_amount": total
+    }
+
+def calculate_average_amount(rows):
+    total = 0.0
+    count = 0
+    for row in rows:
+        val = parse_amount(row.get("amount", ""))
+        if val is not None:
+            total += val
+            count += 1
+    avg = (total / count) if count > 0 else 0.0
+    return {
+        "average_amount": avg
+    }
+
+def sort_transactions_by_date(rows, descending=False):
+    return sorted(rows, key=lambda x: x.get("timestamp", ""), reverse=descending)
+
+def sort_transactions_by_amount(rows, descending=False):
+    def get_amt(row):
+        val = parse_amount(row.get("amount", ""))
+        return val if val is not None else 0.0
+    return sorted(rows, key=get_amt, reverse=descending)
+
+def summarize_transactions(rows):
+    total_transactions = len(rows)
+    success_count = 0
+    failed_count = 0
+    pending_count = 0
+    reversed_count = 0
+    for row in rows:
+        status = row.get("status", "")
+        if status == "SUCCESS":
+            success_count += 1
+        elif status == "REVERSED":
+            reversed_count += 1
+        elif status == "FAILED" or status.startswith("F"):
+            failed_count += 1
+        elif status in ["PENDING", "TIMEOUT", "RETRY", "HOLD"] or status.startswith("P"):
+            pending_count += 1
+    return {
+        "total_transactions": total_transactions,
+        "success_count": success_count,
+        "failed_count": failed_count,
+        "pending_count": pending_count,
+        "reversed_count": reversed_count
+    }
+
+
+
+# ==========================
 if __name__ == "__main__":
+    logging.basicConfig(level=logging.DEBUG)
 
     # Example query JSON (normally produced by Layer 1)
     query = {
-    "intent": "transaction_history",
+    "intent": "list_transactions",
     "filters": {
         "txn_id": None,
-        "initiator": None,
+        "initiator": "Rohan Mehta",
         "beneficiary": None,
-        "status": [
-            "TIMEOUT",
-            "SUCCESS"
-        ],
+        "status": [],
         "date_from": None,
         "date_to": None,
         "amount_min": None,
@@ -746,6 +954,7 @@ if __name__ == "__main__":
 }
 
     results = retrieve(query)
+    print(group_transactions_by_date(results["transactions"]))
+    #print("\n========== Layer 2 Output ==========\n")
+    #print(json.dumps(results, indent=4))
 
-    print("\n========== Layer 2 Output ==========\n")
-    print(json.dumps(results, indent=4))
