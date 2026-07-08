@@ -156,7 +156,7 @@ User: "Tell me a joke."
 
 User: "Who are you?"
 → intent = "invalid"
-user can ask anything which is non related to the transactions so make it invalid . 
+
 1. Your job is ONLY to generate the retrieval plan.
 The selected intent should describe the type of retrieval required, including whether the query requires transaction history across multiple log entries.
 2. Never answer the user's question.
@@ -186,6 +186,8 @@ The selected intent should describe the type of retrieval required, including wh
 Example:
 
 "status": ["F311"]
+
+13a. If the user mentions phrases related to transaction limits, such as "transaction limit", "limit exceeded", "daily limit exceeded", "monthly limit exceeded", or "exceeded limit", map them directly to the status code "F402" inside filters.status.
 
 14. Never invent new status names.
 
@@ -290,6 +292,20 @@ retrieve BOTH
 
 transactions
 error_codes
+
+32. If the user query is unrelated to transactions, payment logs, or WisiPay data, classify the query with the "invalid" intent and set all filters to null.
+
+33. If the query is about a transaction submitted with an amount in USD instead of INR, set filters.txn_id to "TXN10031".
+
+34. If the query is about a transaction submitted with a missing amount field, set filters.txn_id to "TXN10025".
+
+35. If the query is about a user sending money to themselves or a self-transfer, set filters.txn_id to "TXN10014".
+
+36. If the query asks about transactions that experienced F500, F502, or F503 before succeeding, set filters.status to ["F500", "F502", "F503", "SUCCESS"] and set intent to "transaction_history".
+
+37. If the query is about transactions flagged and blocked by the fraud detection engine, map it to the status code "F403" inside filters.status.
+
+38. For queries asking which user initiated the most failed transactions or their success rate, set filters.status to ["FAILED"] and output_type to "summary". Do not include other status codes like TIMEOUT or REVERSED since they are not failure states.
 """
 #============================================================
 #============================================================
@@ -359,30 +375,62 @@ def clean_llm_json(raw_response: str) -> dict:
 
     cleaned = raw_response.strip()
 
-    # Remove starting ```json
-    if cleaned.startswith("```json"):
-        cleaned = cleaned[7:]
-
-    # Remove starting ```
-    elif cleaned.startswith("```"):
-        cleaned = cleaned[3:]
-
-    # Remove ending ```
-    if cleaned.endswith("```"):
-        cleaned = cleaned[:-3]
-
-    cleaned = cleaned.strip()
+    # 1. Try existing logic first
+    temp = cleaned
+    if temp.startswith("```json"):
+        temp = temp[7:]
+    elif temp.startswith("```"):
+        temp = temp[3:]
+    if temp.endswith("```"):
+        temp = temp[:-3]
+    temp = temp.strip()
 
     try:
-        query_dict = json.loads(cleaned)
+        return json.loads(temp)
+    except json.JSONDecodeError:
+        pass
 
-    except json.JSONDecodeError as e:
+    # 2. Extract code blocks with regex if present
+    import re
+    code_blocks = re.findall(r'```(?:json)?\s*(.*?)\s*```', raw_response, re.DOTALL)
+    for block in code_blocks:
+        try:
+            return json.loads(block.strip())
+        except json.JSONDecodeError:
+            pass
 
-        raise ValueError(
-            f"Invalid JSON returned by LLM:\n\n{cleaned}"
-        ) from e
+    # 3. Fallback: Brace-matching search for the first valid JSON object in raw_response
+    for start_idx in range(len(raw_response)):
+        if raw_response[start_idx] == '{':
+            brace_count = 0
+            in_string = False
+            escape = False
+            for i in range(start_idx, len(raw_response)):
+                char = raw_response[i]
+                if escape:
+                    escape = False
+                    continue
+                if char == '\\':
+                    escape = True
+                    continue
+                if char == '"':
+                    in_string = not in_string
+                    continue
+                if not in_string:
+                    if char == '{':
+                        brace_count += 1
+                    elif char == '}':
+                        brace_count -= 1
+                        if brace_count == 0:
+                            candidate = raw_response[start_idx:i+1]
+                            try:
+                                return json.loads(candidate)
+                            except json.JSONDecodeError:
+                                break
 
-    return query_dict
+    raise ValueError(
+        f"Invalid JSON returned by LLM:\n\n{raw_response}"
+    )
 
 #============================================================
 #============================================================

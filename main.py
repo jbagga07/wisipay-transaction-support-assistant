@@ -36,6 +36,16 @@ def main():
             # ----------------------------
             retrieved_data = retrieve(query)
             print(retrieved_data)
+            
+            # Display retrieval statistics if present
+            stats = retrieved_data.get("retrieval_statistics")
+            if stats:
+                print("\n--- Retrieval Statistics ---")
+                print(f"Rows Scanned: {stats.get('rows_scanned')}")
+                print(f"Rows Matched: {stats.get('rows_matched')}")
+                print(f"Rows Returned: {stats.get('rows_returned')}")
+                print("----------------------------\n")
+                
             print("----------------------------------------")
             print("----------------------------------------")
             print("----------------------------------------")
