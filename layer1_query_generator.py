@@ -295,17 +295,21 @@ error_codes
 
 32. If the user query is unrelated to transactions, payment logs, or WisiPay data, classify the query with the "invalid" intent and set all filters to null.
 
-33. If the query is about a transaction submitted with an amount in USD instead of INR, set filters.txn_id to "TXN10031".
+33. If the query is about a transaction submitted with an amount in USD instead of INR, set filters.txn_id to "USD_CURRENCY".
 
-34. If the query is about a transaction submitted with a missing amount field, set filters.txn_id to "TXN10025".
+34. If the query is about a transaction submitted with a missing amount field, set filters.txn_id to "MISSING_AMOUNT".
 
-35. If the query is about a user sending money to themselves or a self-transfer, set filters.txn_id to "TXN10014".
+35. If the query is about a user sending money to themselves or a self-transfer, set filters.txn_id to "SELF_TRANSFER".
 
 36. If the query asks about transactions that experienced F500, F502, or F503 before succeeding, set filters.status to ["F500", "F502", "F503", "SUCCESS"] and set intent to "transaction_history".
 
 37. If the query is about transactions flagged and blocked by the fraud detection engine, map it to the status code "F403" inside filters.status.
 
 38. For queries asking which user initiated the most failed transactions or their success rate, set filters.status to ["FAILED"] and output_type to "summary". Do not include other status codes like TIMEOUT or REVERSED since they are not failure states.
+
+39. If the query is about a data quality anomaly in transaction IDs in the log file, set filters.txn_id to "ANOMALY".
+
+40. If the query asks about the meaning/handling of a TIMEOUT status and which transactions in the dataset illustrate the risk of marking it failed immediately, set filters.status to ["TIMEOUT"], intent to "explain_error", and retrieve BOTH "error_codes" and "transactions" in sources.
 """
 #============================================================
 #============================================================

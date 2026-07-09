@@ -5,105 +5,79 @@
 Q1.
 User Query: How many unique transaction IDs are recorded in the system between May 1 and May 4, 2026?
 
-Layer 1 generated JSON:
-{
-  "intent": "count_transactions",
-  "filters": {
-    "txn_id": null,
-    "initiator": null,
-    "beneficiary": null,
-    "status": null,
-    "date_from": "2026-05-01",
-    "date_to": "2026-05-04",
-    "amount_min": null,
-    "amount_max": null
-  },
-  "sources": [
-    "transactions"
-  ],
-  "output_type": "count"
-}
+----------------------------------------
+----------------------------------------
+{'intent': 'count_transactions', 'filters': {'txn_id': None, 'initiator': None, 'beneficiary': None, 'status': None, 'date_from': '2026-05-01', 'date_to': '2026-05-04', 'amount_min': None, 'amount_max': None}, 'sources': ['transactions'], 'output_type': 'count'}
+----------------------------------------
+----------------------------------------
+----------------------------------------
+{'count': 70, 'retrieval_statistics': {'rows_scanned': 128, 'rows_matched': 91, 'rows_returned': 70}}
 
-Layer 2 retrieval statistics:
+--- Retrieval Statistics ---
 Rows Scanned: 128
 Rows Matched: 91
 Rows Returned: 70
+----------------------------
 
-Layer 2 retrieved data:
-{"count":70}
+----------------------------------------
+----------------------------------------
+----------------------------------------
 
-Final Layer 3 response:
+----------------------------------------
+Answer:
+----------------------------------------
 There are 70 unique transaction IDs recorded in the system between May 1 and May 4, 2026.
 --------------------------------------------------------------------------------
 
 Q2.
 User Query: What is the final status of TXN10006, and what concern does it raise about the health of this transaction?
 
-Layer 1 generated JSON:
-{
-  "intent": "lookup_transaction",
-  "filters": {
-    "txn_id": "TXN10006",
-    "initiator": null,
-    "beneficiary": null,
-    "status": null,
-    "date_from": null,
-    "date_to": null,
-    "amount_min": null,
-    "amount_max": null
-  },
-  "sources": [
-    "transactions",
-    "error_codes"
-  ],
-  "output_type": "detail"
-}
+----------------------------------------
+{'intent': 'lookup_transaction', 'filters': {'txn_id': 'TXN10006', 'initiator': None, 'beneficiary': None, 'status': None, 'date_from': None, 'date_to': None, 'amount_min': None, 'amount_max': None}, 'sources': ['transactions', 'error_codes'], 'output_type': 'detail'}
+----------------------------------------
+----------------------------------------
+----------------------------------------
+{'transactions': [{'timestamp': '2026-05-01 10:25:09', 'txn_id': 'TXN10006', 'initiator': 'Sneha Joshi', 'beneficiary': 'Ananya Iyer', 'amount': '4200.00 INR', 'status': 'P102'}], 'error_codes': {'P102': {'code': 'P102', 'category': 'PENDING_STATES', 'http_analog': 202, 'severity': 'info', 'description': "Pending — the provider has received the request and is awaiting confirmation from the beneficiary's bank. Common on IMPS and NEFT rails where inter-bank settlement takes additional time.", 'user_facing_message': "Your payment is awaiting confirmation from the recipient's bank. This usually takes a few minutes.", 'resolution_hint': 'Poll the status endpoint after 5 minutes. If still P102 after 2 hours, escalate to support.', 'retryable': False, 'provider_triggered': True}}, 'retrieval_statistics': {'rows_scanned': 128, 'rows_matched': 1, 'rows_returned': 1}}
 
-Layer 2 retrieval statistics:
+--- Retrieval Statistics ---
 Rows Scanned: 128
 Rows Matched: 1
 Rows Returned: 1
+----------------------------
 
-Layer 2 retrieved data:
-{"transactions":[{"timestamp":"2026-05-01 10:25:09","txn_id":"TXN10006","initiator":"Sneha Joshi","beneficiary":"Ananya Iyer","amount":"4200.00 INR","status":"P102"}],"error_codes":{"P102":{"code":"P102","category":"PENDING_STATES","http_analog":202,"severity":"info","description":"Pending \u2014 the provider has received the request and is awaiting confirmation from the beneficiary's bank. Common on IMPS and NEFT rails where inter-bank settlement takes additional time.","user_facing_message":"Your payment is awaiting confirmation from the recipient's bank. This usually takes a few minutes.","resolution_hint":"Poll the status endpoint after 5 minutes. If still P102 after 2 hours, escalate to support.","retryable":false,"provider_triggered":true}}}
+----------------------------------------
+----------------------------------------
+----------------------------------------
 
-Final Layer 3 response:
-The final status of transaction TXN10006 is P102. This indicates that the payment is pending, as the provider has received the request and is awaiting confirmation from the beneficiary's bank.
+----------------------------------------
+Answer:
+----------------------------------------
+The final status of transaction TXN10006 is P102. This indicates that the transaction is pending, as the provider has received the request and is awaiting confirmation from the beneficiary's bank.
 --------------------------------------------------------------------------------
 
 Q3.
 User Query: Which transactions were flagged and blocked by the fraud detection engine? Who initiated them, and what amounts were involved?
+----------------------------------------
+----------------------------------------
+{'intent': 'list_transactions', 'filters': {'txn_id': None, 'initiator': None, 'beneficiary': None, 'status': ['F403'], 'date_from': None, 'date_to': None, 'amount_min': None, 'amount_max': None}, 'sources': ['transactions'], 'output_type': 'list'}
+----------------------------------------
+----------------------------------------
+----------------------------------------
+{'transactions': [{'timestamp': '2026-05-02 09:28:47', 'txn_id': 'TXN10027', 'initiator': 'Priya Singh', 'beneficiary': 'Arjun Sharma', 'amount': '4400.00 INR', 'status': 'F403'}, {'timestamp': '2026-05-03 12:48:03', 'txn_id': 'TXN10053', 'initiator': 'Ananya Iyer', 'beneficiary': 'Suresh Kumar', 'amount': '2900.00 INR', 'status': 'F403'}], 'retrieval_statistics': {'rows_scanned': 128, 'rows_matched': 2, 'rows_returned': 2}}
 
-Layer 1 generated JSON:
-{
-  "intent": "list_transactions",
-  "filters": {
-    "txn_id": null,
-    "initiator": null,
-    "beneficiary": null,
-    "status": [
-      "F403"
-    ],
-    "date_from": null,
-    "date_to": null,
-    "amount_min": null,
-    "amount_max": null
-  },
-  "sources": [
-    "transactions"
-  ],
-  "output_type": "list"
-}
-
-Layer 2 retrieval statistics:
+--- Retrieval Statistics ---
 Rows Scanned: 128
 Rows Matched: 2
 Rows Returned: 2
+----------------------------
 
-Layer 2 retrieved data:
-{"transactions":[{"timestamp":"2026-05-02 09:28:47","txn_id":"TXN10027","initiator":"Priya Singh","beneficiary":"Arjun Sharma","amount":"4400.00 INR","status":"F403"},{"timestamp":"2026-05-03 12:48:03","txn_id":"TXN10053","initiator":"Ananya Iyer","beneficiary":"Suresh Kumar","amount":"2900.00 INR","status":"F403"}]}
+----------------------------------------
+----------------------------------------
+----------------------------------------
 
-Final Layer 3 response:
+----------------------------------------
+Answer:
+----------------------------------------
 The following transactions were flagged and blocked by the fraud detection engine:
 
 *   **TXN10027**: Initiated by Priya Singh for 4,400.00 INR.
@@ -112,197 +86,149 @@ The following transactions were flagged and blocked by the fraud detection engin
 
 Q4.
 User Query: How many transactions did Rohan Mehta initiate in total? Provide a breakdown of outcomes — how many succeeded, how many failed, and are any still unresolved?
+----------------------------------------
+----------------------------------------
+{'intent': 'count_transactions', 'filters': {'txn_id': None, 'initiator': 'Rohan Mehta', 'beneficiary': None, 'status': None, 'date_from': None, 'date_to': None, 'amount_min': None, 'amount_max': None}, 'sources': ['transactions'], 'output_type': 'summary'}
+----------------------------------------
+----------------------------------------
+----------------------------------------
+{'summary': {'total_transactions': 9, 'success_count': 7, 'failed_count': 1, 'pending_count': 1, 'reversed_count': 0}, 'grouped_by_status': {'SUCCESS': 7, 'F207': 1, 'PENDING': 1}, 'retrieval_statistics': {'rows_scanned': 128, 'rows_matched': 11, 'rows_returned': 9}}
 
-Layer 1 generated JSON:
-{
-  "intent": "count_transactions",
-  "filters": {
-    "txn_id": null,
-    "initiator": "Rohan Mehta",
-    "beneficiary": null,
-    "status": null,
-    "date_from": null,
-    "date_to": null,
-    "amount_min": null,
-    "amount_max": null
-  },
-  "sources": [
-    "transactions"
-  ],
-  "output_type": "summary"
-}
-
-Layer 2 retrieval statistics:
+--- Retrieval Statistics ---
 Rows Scanned: 128
 Rows Matched: 11
 Rows Returned: 9
+----------------------------
 
-Layer 2 retrieved data:
-{"summary":{"total_transactions":9,"success_count":7,"failed_count":1,"pending_count":1,"reversed_count":0},"grouped_by_status":{"SUCCESS":7,"F207":1,"PENDING":1}}
+----------------------------------------
+----------------------------------------
+----------------------------------------
 
-Final Layer 3 response:
-Rohan Mehta initiated a total of 9 transactions. The breakdown of outcomes is as follows:
-- Succeeded: 7
-- Failed: 1
-- Unresolved (Pending): 1
+----------------------------------------
+Answer:
+----------------------------------------
+Rohan Mehta initiated a total of 9 transactions. Here is the breakdown of the outcomes:
+
+*   **Succeeded:** 7
+*   **Failed:** 1 (Error code: F207)
+*   **Unresolved (Pending):** 1
+
 --------------------------------------------------------------------------------
 
 Q5.
 User Query: A transaction was submitted with an amount in USD instead of INR. Identify the transaction, explain what the provider returned, and state the correct user-facing error message that should be displayed.
+----------------------------------------
+{'intent': 'lookup_transaction', 'filters': {'txn_id': 'USD_CURRENCY', 'initiator': None, 'beneficiary': None, 'status': None, 'date_from': None, 'date_to': None, 'amount_min': None, 'amount_max': None}, 'sources': ['transactions', 'provider_responses', 'error_codes'], 'output_type': 'detail'}
+----------------------------------------
+----------------------------------------
+----------------------------------------
+{'error_codes': {'F400': {'code': 'F400', 'category': 'FAILURE_STATES', 'http_analog': 400, 'severity': 'error', 'description': 'Failed — the request sent to the provider was malformed or contained invalid data. Common causes: missing required fields (e.g., amount, currency, beneficiary), unsupported currency, or data type mismatch.', 'user_facing_message': 'Payment failed due to an issue with the request. Please check your details and try again.', 'resolution_hint': 'Inspect the request payload in provider_responses.log. Common fixes: ensure amount is non-null, currency is INR, and all required fields are populated. This is usually a client-side or integration bug.', 'retryable': False, 'provider_triggered': False}}, 'usd_currency_analysis': {'txn_id': 'TXN10031', 'initiator': 'Ananya Iyer', 'provider': 'HDFC_PG', 'response_code': '400', 'response_message': 'Bad request: unsupported currency USD', 'explanation': 'The transaction TXN10031 failed because it was submitted with an amount in USD instead of INR, which is not supported by the payment provider (HDFC_PG).'}, 'retrieval_statistics': {'rows_scanned': 254, 'rows_matched': 2, 'rows_returned': 2}}
 
-Layer 1 generated JSON:
-{
-  "intent": "lookup_transaction",
-  "filters": {
-    "txn_id": "TXN10031",
-    "initiator": null,
-    "beneficiary": null,
-    "status": null,
-    "date_from": null,
-    "date_to": null,
-    "amount_min": null,
-    "amount_max": null
-  },
-  "sources": [
-    "transactions",
-    "provider_responses",
-    "error_codes"
-  ],
-  "output_type": "detail"
-}
-
-Layer 2 retrieval statistics:
+--- Retrieval Statistics ---
 Rows Scanned: 254
 Rows Matched: 2
 Rows Returned: 2
+----------------------------
 
-Layer 2 retrieved data:
-{"transactions":[{"timestamp":"2026-05-02 10:50:18","txn_id":"TXN10031","initiator":"Ananya Iyer","beneficiary":"Suresh Kumar","amount":"430.00 USD","status":"F400"}],"provider_responses":[{"timestamp":"2026-05-02 10:50:19","txn_id":"TXN10031","provider":"HDFC_PG","provider_ref":"","resp_code":"400","resp_msg":"Bad request: unsupported currency USD","latency_ms":"92"}],"error_codes":{"F400":{"code":"F400","category":"FAILURE_STATES","http_analog":400,"severity":"error","description":"Failed \u2014 the request sent to the provider was malformed or contained invalid data. Common causes: missing required fields (e.g., amount, currency, beneficiary), unsupported currency, or data type mismatch.","user_facing_message":"Payment failed due to an issue with the request. Please check your details and try again.","resolution_hint":"Inspect the request payload in provider_responses.log. Common fixes: ensure amount is non-null, currency is INR, and all required fields are populated. This is usually a client-side or integration bug.","retryable":false,"provider_triggered":false}},"usd_currency_analysis":{"txn_id":"TXN10031","initiator":"Ananya Iyer","provider":"HDFC_PG","response_code":"400","response_message":"Bad request: unsupported currency USD","explanation":"The transaction TXN10031 failed because it was submitted with an amount in USD instead of INR, which is not supported by the payment provider (HDFC_PG)."}}
+----------------------------------------
+----------------------------------------
+----------------------------------------
 
-Final Layer 3 response:
-Transaction TXN10031, initiated by Ananya Iyer for 430.00 USD, failed because it was submitted in USD instead of INR.
-
-The provider (HDFC_PG) returned a response code of "400" with the message: "Bad request: unsupported currency USD".
+----------------------------------------
+Answer:
+----------------------------------------
+The transaction is TXN10031. The provider (HDFC_PG) returned a "400" response code with the message: "Bad request: unsupported currency USD."
 
 The correct user-facing error message that should be displayed is: "Payment failed due to an issue with the request. Please check your details and try again."
 --------------------------------------------------------------------------------
 
 Q6.
 User Query: Describe the complete journey of TXN10039 — how many attempts were made, which provider handled it, what the latency was per attempt, and why did it ultimately fail?
+----------------------------------------
+----------------------------------------
+----------------------------------------
+{'intent': 'transaction_history', 'filters': {'txn_id': 'TXN10039', 'initiator': None, 'beneficiary': None, 'status': None, 'date_from': None, 'date_to': None, 'amount_min': None, 'amount_max': None}, 'sources': ['transactions', 'provider_responses', 'perf_metrics', 'error_codes'], 'output_type': 'detail'}
+----------------------------------------
+----------------------------------------
+----------------------------------------
+{'transactions': [{'timestamp': '2026-05-02 13:28:50', 'txn_id': 'TXN10039', 'initiator': 'Vikram Nair', 'beneficiary': 'Arjun Sharma', 'amount': '1750.00 INR', 'status': 'TIMEOUT'}, {'timestamp': '2026-05-02 13:30:22', 'txn_id': 'TXN10039', 'initiator': 'Vikram Nair', 'beneficiary': 'Arjun Sharma', 'amount': '1750.00 INR', 'status': 'RETRY'}, {'timestamp': '2026-05-02 13:32:47', 'txn_id': 'TXN10039', 'initiator': 'Vikram Nair', 'beneficiary': 'Arjun Sharma', 'amount': '1750.00 INR', 'status': 'TIMEOUT'}, {'timestamp': '2026-05-02 13:33:00', 'txn_id': 'TXN10039', 'initiator': 'Vikram Nair', 'beneficiary': 'Arjun Sharma', 'amount': '1750.00 INR', 'status': 'FAILED'}], 'provider_responses': [{'timestamp': '2026-05-02 13:28:51', 'txn_id': 'TXN10039', 'provider': 'NPCI_UPI', 'provider_ref': 'UPI20260502132849', 'resp_code': '408', 'resp_msg': 'Request timed out; no response from bank', 'latency_ms': '5001'}, {'timestamp': '2026-05-02 13:30:23', 'txn_id': 'TXN10039', 'provider': 'NPCI_UPI', 'provider_ref': 'UPI20260502133021', 'resp_code': '408', 'resp_msg': 'Retry attempt 1: request timed out', 'latency_ms': '5003'}, {'timestamp': '2026-05-02 13:32:48', 'txn_id': 'TXN10039', 'provider': 'NPCI_UPI', 'provider_ref': 'UPI20260502133246', 'resp_code': '408', 'resp_msg': 'Retry attempt 2: request timed out; aborting', 'latency_ms': '5000'}], 'perf_metrics': [{'timestamp': '2026-05-02 13:28:50', 'txn_id': 'TXN10039', 'endpoint': '/api/v2/payment/upi', 'http_status': '408', 'latency_ms': '5001', 'retry_count': '0', 'queue_wait_ms': '18', 'resp_timestamp': '2026-05-02T13:28:55Z'}, {'timestamp': '2026-05-02 13:30:22', 'txn_id': 'TXN10039', 'endpoint': '/api/v2/payment/upi', 'http_status': '408', 'latency_ms': '5003', 'retry_count': '1', 'queue_wait_ms': '7', 'resp_timestamp': '2026-05-02T13:30:27Z'}, {'timestamp': '2026-05-02 13:32:47', 'txn_id': 'TXN10039', 'endpoint': '/api/v2/payment/upi', 'http_status': '408', 'latency_ms': '5000', 'retry_count': '2', 'queue_wait_ms': '6', 'resp_timestamp': '2026-05-02T13:32:52Z'}], 'error_codes': {'FAILED': {'code': 'FAILED', 'category': 'FAILURE_STATES', 'http_analog': 500, 'severity': 'error', 'description': 'Generic failure returned by the provider without a more specific error code. The transaction was not completed. Use provider_responses.log to retrieve the raw provider message for diagnosis.', 'user_facing_message': 'Your payment could not be processed. Please try again or use a different payment method.', 'resolution_hint': 'Check provider_responses.log for the raw error message. Retry once if the cause is unclear. If the failure persists, contact the payment provider.', 'retryable': True, 'provider_triggered': True}, 'TIMEOUT': {'code': 'TIMEOUT', 'category': 'TRANSIENT_STATES', 'http_analog': 408, 'severity': 'warning', 'description': 'The WisiPay backend did not receive any response from the provider within the configured timeout window (default: 5000ms). The transaction state is UNKNOWN — it may or may not have been processed by the provider.', 'user_facing_message': 'Your payment is taking longer than expected. We are checking the status — please do not submit again.', 'resolution_hint': "CRITICAL: Do not mark as FAILED immediately. Query the provider's status API using PROVIDER_REF before deciding. If the provider confirms no record, mark FAILED and allow retry. If confirmed, mark SUCCESS or REVERSED accordingly.", 'retryable': 'conditional', 'provider_triggered': False}, 'RETRY': {'code': 'RETRY', 'category': 'TRANSIENT_STATES', 'http_analog': None, 'severity': 'info', 'description': 'An internal state indicating that the transaction is being re-submitted to the provider after a TIMEOUT or transient provider error (F500, F502, F503). The RETRY state is always followed by a terminal or pending state.', 'user_facing_message': "We're re-processing your payment — please wait.", 'resolution_hint': 'Ensure idempotency: use the same TXN_ID on retry to prevent double-charging. Maximum retry attempts: 3. After 3 failures, mark as FAILED and notify the user.', 'retryable': True, 'provider_triggered': False}}, 'retrieval_statistics': {'rows_scanned': 377, 'rows_matched': 10, 'rows_returned': 10}}
 
-Layer 1 generated JSON:
-{
-  "intent": "transaction_history",
-  "filters": {
-    "txn_id": "TXN10039",
-    "initiator": null,
-    "beneficiary": null,
-    "status": null,
-    "date_from": null,
-    "date_to": null,
-    "amount_min": null,
-    "amount_max": null
-  },
-  "sources": [
-    "transactions",
-    "provider_responses",
-    "perf_metrics",
-    "error_codes"
-  ],
-  "output_type": "detail"
-}
-
-Layer 2 retrieval statistics:
+--- Retrieval Statistics ---
 Rows Scanned: 377
 Rows Matched: 10
 Rows Returned: 10
+----------------------------
 
-Layer 2 retrieved data:
-{"transactions":[{"timestamp":"2026-05-02 13:28:50","txn_id":"TXN10039","initiator":"Vikram Nair","beneficiary":"Arjun Sharma","amount":"1750.00 INR","status":"TIMEOUT"},{"timestamp":"2026-05-02 13:30:22","txn_id":"TXN10039","initiator":"Vikram Nair","beneficiary":"Arjun Sharma","amount":"1750.00 INR","status":"RETRY"},{"timestamp":"2026-05-02 13:32:47","txn_id":"TXN10039","initiator":"Vikram Nair","beneficiary":"Arjun Sharma","amount":"1750.00 INR","status":"TIMEOUT"},{"timestamp":"2026-05-02 13:33:00","txn_id":"TXN10039","initiator":"Vikram Nair","beneficiary":"Arjun Sharma","amount":"1750.00 INR","status":"FAILED"}],"provider_responses":[{"timestamp":"2026-05-02 13:28:51","txn_id":"TXN10039","provider":"NPCI_UPI","provider_ref":"UPI20260502132849","resp_code":"408","resp_msg":"Request timed out; no response from bank","latency_ms":"5001"},{"timestamp":"2026-05-02 13:30:23","txn_id":"TXN10039","provider":"NPCI_UPI","provider_ref":"UPI20260502133021","resp_code":"408","resp_msg":"Retry attempt 1: request timed out","latency_ms":"5003"},{"timestamp":"2026-05-02 13:32:48","txn_id":"TXN10039","provider":"NPCI_UPI","provider_ref":"UPI20260502133246","resp_code":"408","resp_msg":"Retry attempt 2: request timed out; aborting","latency_ms":"5000"}],"perf_metrics":[{"timestamp":"2026-05-02 13:28:50","txn_id":"TXN10039","endpoint":"/api/v2/payment/upi","http_status":"408","latency_ms":"5001","retry_count":"0","queue_wait_ms":"18","resp_timestamp":"2026-05-02T13:28:55Z"},{"timestamp":"2026-05-02 13:30:22","txn_id":"TXN10039","endpoint":"/api/v2/payment/upi","http_status":"408","latency_ms":"5003","retry_count":"1","queue_wait_ms":"7","resp_timestamp":"2026-05-02T13:30:27Z"},{"timestamp":"2026-05-02 13:32:47","txn_id":"TXN10039","endpoint":"/api/v2/payment/upi","http_status":"408","latency_ms":"5000","retry_count":"2","queue_wait_ms":"6","resp_timestamp":"2026-05-02T13:32:52Z"}],"error_codes":{"FAILED":{"code":"FAILED","category":"FAILURE_STATES","http_analog":500,"severity":"error","description":"Generic failure returned by the provider without a more specific error code. The transaction was not completed. Use provider_responses.log to retrieve the raw provider message for diagnosis.","user_facing_message":"Your payment could not be processed. Please try again or use a different payment method.","resolution_hint":"Check provider_responses.log for the raw error message. Retry once if the cause is unclear. If the failure persists, contact the payment provider.","retryable":true,"provider_triggered":true},"TIMEOUT":{"code":"TIMEOUT","category":"TRANSIENT_STATES","http_analog":408,"severity":"warning","description":"The WisiPay backend did not receive any response from the provider within the configured timeout window (default: 5000ms). The transaction state is UNKNOWN \u2014 it may or may not have been processed by the provider.","user_facing_message":"Your payment is taking longer than expected. We are checking the status \u2014 please do not submit again.","resolution_hint":"CRITICAL: Do not mark as FAILED immediately. Query the provider's status API using PROVIDER_REF before deciding. If the provider confirms no record, mark FAILED and allow retry. If confirmed, mark SUCCESS or REVERSED accordingly.","retryable":"conditional","provider_triggered":false},"RETRY":{"code":"RETRY","category":"TRANSIENT_STATES","http_analog":null,"severity":"info","description":"An internal state indicating that the transaction is being re-submitted to the provider after a TIMEOUT or transient provider error (F500, F502, F503). The RETRY state is always followed by a terminal or pending state.","user_facing_message":"We're re-processing your payment \u2014 please wait.","resolution_hint":"Ensure idempotency: use the same TXN_ID on retry to prevent double-charging. Maximum retry attempts: 3. After 3 failures, mark as FAILED and notify the user.","retryable":true,"provider_triggered":false}}}
+----------------------------------------
+----------------------------------------
+----------------------------------------
 
-Final Layer 3 response:
-Transaction TXN10039 was handled by the provider NPCI_UPI and involved 3 attempts before ultimately failing:
+----------------------------------------
+Answer:
+----------------------------------------
+Transaction TXN10039 was handled by the provider NPCI_UPI and underwent 3 attempts before ultimately failing.
 
-*   **Attempt 1:** Latency was 5001ms. The response was a timeout (code 408) stating "Request timed out; no response from bank."
-*   **Attempt 2:** Latency was 5003ms. This was a retry attempt that also timed out (code 408).
-*   **Attempt 3:** Latency was 5000ms. This second retry attempt timed out (code 408) and was aborted.
+**Attempt Details:**
+*   **Attempt 1:** Latency was 5001ms. Result: Timeout (Response code 408: "Request timed out; no response from bank").
+*   **Attempt 2:** Latency was 5003ms. Result: Timeout (Response code 408: "Retry attempt 1: request timed out").
+*   **Attempt 3:** Latency was 5000ms. Result: Timeout (Response code 408: "Retry attempt 2: request timed out; aborting").
 
-The transaction ultimately failed because it reached a "FAILED" state, which is described as a generic failure returned by the provider where the transaction was not completed.
+**Final Outcome:**
+The transaction ultimately failed. The "FAILED" status is described as a generic failure where the transaction was not completed.
 --------------------------------------------------------------------------------
 
 Q7.
 User Query: Which user initiated the most failed transactions (counting all failure-type final statuses combined)? What was their overall success rate?
+----------------------------------------
+----------------------------------------
+{'intent': 'count_transactions', 'filters': {'txn_id': None, 'initiator': None, 'beneficiary': None, 'status': ['FAILED'], 'date_from': None, 'date_to': None, 'amount_min': None, 'amount_max': None}, 'sources': ['transactions'], 'output_type': 'summary'}
+----------------------------------------
+----------------------------------------
+----------------------------------------
+{'summary': {'Ananya Iyer': 3, 'Karan Shah': 5, 'Priya Singh': 4, 'Rohan Mehta': 1, 'Suresh Kumar': 2, 'Meera Patel': 2, 'Arjun Sharma': 1, 'Vikram Nair': 1, 'Ritu Kapoor': 2, 'Sneha Joshi': 1}, 'grouped_by_initiator': {'Ananya Iyer': 3, 'Karan Shah': 5, 'Priya Singh': 4, 'Rohan Mehta': 1, 'Suresh Kumar': 2, 'Meera Patel': 2, 'Arjun Sharma': 1, 'Vikram Nair': 1, 'Ritu Kapoor': 2, 'Sneha Joshi': 1}, 'failed_user_analysis': {'initiator': 'Karan Shah', 'failed_count': 5, 'total_count': 8, 'success_count': 3, 'success_rate': '37.50%', 'explanation': 'Karan Shah initiated the most failed transactions with 5 failures out of 8 total attempts, achieving an overall success rate of 37.50%.'}, 'retrieval_statistics': {'rows_scanned': 128, 'rows_matched': 25, 'rows_returned': 22}}
 
-Layer 1 generated JSON:
-{
-  "intent": "count_transactions",
-  "filters": {
-    "txn_id": null,
-    "initiator": null,
-    "beneficiary": null,
-    "status": [
-      "FAILED"
-    ],
-    "date_from": null,
-    "date_to": null,
-    "amount_min": null,
-    "amount_max": null
-  },
-  "sources": [
-    "transactions"
-  ],
-  "output_type": "summary"
-}
-
-Layer 2 retrieval statistics:
+--- Retrieval Statistics ---
 Rows Scanned: 128
 Rows Matched: 25
 Rows Returned: 22
+----------------------------
 
-Layer 2 retrieved data:
-{"summary":{"Ananya Iyer":3,"Karan Shah":5,"Priya Singh":4,"Rohan Mehta":1,"Suresh Kumar":2,"Meera Patel":2,"Arjun Sharma":1,"Vikram Nair":1,"Ritu Kapoor":2,"Sneha Joshi":1},"grouped_by_initiator":{"Ananya Iyer":3,"Karan Shah":5,"Priya Singh":4,"Rohan Mehta":1,"Suresh Kumar":2,"Meera Patel":2,"Arjun Sharma":1,"Vikram Nair":1,"Ritu Kapoor":2,"Sneha Joshi":1},"failed_user_analysis":{"initiator":"Karan Shah","failed_count":5,"total_count":8,"success_count":3,"success_rate":"37.50%","explanation":"Karan Shah initiated the most failed transactions with 5 failures out of 8 total attempts, achieving an overall success rate of 37.50%."}}
+----------------------------------------
+----------------------------------------
+----------------------------------------
 
-Final Layer 3 response:
-Karan Shah initiated the most failed transactions with 5 failures. Their overall success rate was 37.50%.
+----------------------------------------
+Answer:
+----------------------------------------
+Karan Shah initiated the most failed transactions with a total of 5 failures. Their overall success rate was 37.50%.
 --------------------------------------------------------------------------------
 
 Q8.
 User Query: What does error code F311 mean? List every transaction in the dataset that received F311 as its final status, including initiator, beneficiary, and amount for each.
+----------------------------------------
+----------------------------------------
+{'intent': 'explain_error', 'filters': {'txn_id': None, 'initiator': None, 'beneficiary': None, 'status': ['F311'], 'date_from': None, 'date_to': None, 'amount_min': None, 'amount_max': None}, 'sources': ['transactions', 'error_codes'], 'output_type': 'list'}
+----------------------------------------
+----------------------------------------
+----------------------------------------
+{'transactions': [{'timestamp': '2026-05-01 11:02:55', 'txn_id': 'TXN10008', 'initiator': 'Karan Shah', 'beneficiary': 'Rohan Mehta', 'amount': '1200.00 INR', 'status': 'F311'}, {'timestamp': '2026-05-01 13:58:21', 'txn_id': 'TXN10018', 'initiator': 'Karan Shah', 'beneficiary': 'Vikram Nair', 'amount': '2200.00 INR', 'status': 'F311'}, {'timestamp': '2026-05-02 12:35:06', 'txn_id': 'TXN10036', 'initiator': 'Meera Patel', 'beneficiary': 'Rohan Mehta', 'amount': '480.50 INR', 'status': 'F311'}, {'timestamp': '2026-05-03 10:10:19', 'txn_id': 'TXN10045', 'initiator': 'Ritu Kapoor', 'beneficiary': '', 'amount': '250.00 INR', 'status': 'F311'}, {'timestamp': '2026-05-04 10:40:55', 'txn_id': 'TXN10063', 'initiator': 'Sneha Joshi', 'beneficiary': 'Arjun Sharma', 'amount': '2600.00 INR', 'status': 'F311'}], 'error_codes': {'F311': {'code': 'F311', 'category': 'FAILURE_STATES', 'http_analog': 400, 'severity': 'error', 'description': 'Failed — the beneficiary account number or VPA (UPI ID) provided is invalid, does not exist, or has been closed. The provider could not resolve the destination.', 'user_facing_message': "Payment failed: the recipient's account details appear to be invalid or inactive. Please verify and try again.", 'resolution_hint': "Ask the user to double-check the beneficiary account number, IFSC code, or UPI ID. Re-validate against the bank's account verification API before re-attempting.", 'retryable': False, 'provider_triggered': True}}, 'retrieval_statistics': {'rows_scanned': 128, 'rows_matched': 5, 'rows_returned': 5}}
 
-Layer 1 generated JSON:
-{
-  "intent": "explain_error",
-  "filters": {
-    "txn_id": null,
-    "initiator": null,
-    "beneficiary": null,
-    "status": [
-      "F311"
-    ],
-    "date_from": null,
-    "date_to": null,
-    "amount_min": null,
-    "amount_max": null
-  },
-  "sources": [
-    "error_codes",
-    "transactions"
-  ],
-  "output_type": "list"
-}
-
-Layer 2 retrieval statistics:
+--- Retrieval Statistics ---
 Rows Scanned: 128
 Rows Matched: 5
 Rows Returned: 5
+----------------------------
 
-Layer 2 retrieved data:
-{"transactions":[{"timestamp":"2026-05-01 11:02:55","txn_id":"TXN10008","initiator":"Karan Shah","beneficiary":"Rohan Mehta","amount":"1200.00 INR","status":"F311"},{"timestamp":"2026-05-01 13:58:21","txn_id":"TXN10018","initiator":"Karan Shah","beneficiary":"Vikram Nair","amount":"2200.00 INR","status":"F311"},{"timestamp":"2026-05-02 12:35:06","txn_id":"TXN10036","initiator":"Meera Patel","beneficiary":"Rohan Mehta","amount":"480.50 INR","status":"F311"},{"timestamp":"2026-05-03 10:10:19","txn_id":"TXN10045","initiator":"Ritu Kapoor","beneficiary":"","amount":"250.00 INR","status":"F311"},{"timestamp":"2026-05-04 10:40:55","txn_id":"TXN10063","initiator":"Sneha Joshi","beneficiary":"Arjun Sharma","amount":"2600.00 INR","status":"F311"}],"error_codes":{"F311":{"code":"F311","category":"FAILURE_STATES","http_analog":400,"severity":"error","description":"Failed \u2014 the beneficiary account number or VPA (UPI ID) provided is invalid, does not exist, or has been closed. The provider could not resolve the destination.","user_facing_message":"Payment failed: the recipient's account details appear to be invalid or inactive. Please verify and try again.","resolution_hint":"Ask the user to double-check the beneficiary account number, IFSC code, or UPI ID. Re-validate against the bank's account verification API before re-attempting.","retryable":false,"provider_triggered":true}}}
+----------------------------------------
+----------------------------------------
+----------------------------------------
 
-Final Layer 3 response:
-Error code F311 means that the payment failed because the beneficiary account number or VPA (UPI ID) provided is invalid, does not exist, or has been closed.
+----------------------------------------
+Answer:
+----------------------------------------
+Error code F311 means that the payment failed because the beneficiary account number or VPA (UPI ID) provided is invalid, does not exist, or has been closed, and the provider could not resolve the destination.
 
-The following transactions received status F311:
+The following transactions received error code F311:
 
 *   **Initiator:** Karan Shah, **Beneficiary:** Rohan Mehta, **Amount:** 1200.00 INR
 *   **Initiator:** Karan Shah, **Beneficiary:** Vikram Nair, **Amount:** 2200.00 INR
@@ -313,135 +239,128 @@ The following transactions received status F311:
 
 Q9.
 User Query: How many transactions are currently in a non-terminal state (PENDING, P102, P203, or HOLD)? List each one with its TXN_ID, initiator, amount, and current status.
+----------------------------------------
+----------------------------------------
+{'intent': 'list_transactions', 'filters': {'txn_id': None, 'initiator': None, 'beneficiary': None, 'status': ['PENDING', 'P102', 'P203', 'HOLD'], 'date_from': None, 'date_to': None, 'amount_min': None, 'amount_max': None}, 'sources': ['transactions'], 'output_type': 'list'}
+----------------------------------------
+----------------------------------------
+----------------------------------------
+{'transactions': [{'timestamp': '2026-05-01 10:25:09', 'txn_id': 'TXN10006', 'initiator': 'Sneha Joshi', 'beneficiary': 'Ananya Iyer', 'amount': '4200.00 INR', 'status': 'P102'}, {'timestamp': '2026-05-01 13:20:07', 'txn_id': 'TXN10016', 'initiator': 'Vikram Nair', 'beneficiary': 'Priya Singh', 'amount': '4750.00 INR', 'status': 'P102'}, {'timestamp': '2026-05-01 14:10:45', 'txn_id': 'TXN10019', 'initiator': 'Rohan Mehta', 'beneficiary': 'Ananya Iyer', 'amount': '18000.00 INR', 'status': 'PENDING'}, {'timestamp': '2026-05-02 08:47:05', 'txn_id': 'TXN10024', 'initiator': 'Ritu Kapoor', 'beneficiary': 'Deepak Verma', 'amount': '12500.00 INR', 'status': 'P203'}, {'timestamp': '2026-05-02 11:40:01', 'txn_id': 'TXN10034', 'initiator': 'Ritu Kapoor', 'beneficiary': 'Vikram Nair', 'amount': '3350.00 INR', 'status': 'HOLD'}, {'timestamp': '2026-05-03 10:15:00', 'txn_id': 'TXN10043', 'initiator': 'Deepak Verma', 'beneficiary': 'Karan Shah', 'amount': '13400.00 INR', 'status': 'HOLD'}, {'timestamp': '2026-05-04 11:15:09', 'txn_id': 'TXN10065', 'initiator': 'Deepak Verma', 'beneficiary': 'Sneha Joshi', 'amount': '3750.00 INR', 'status': 'HOLD'}], 'retrieval_statistics': {'rows_scanned': 128, 'rows_matched': 13, 'rows_returned': 7}}
 
-Layer 1 generated JSON:
-{
-  "intent": "list_transactions",
-  "filters": {
-    "txn_id": null,
-    "initiator": null,
-    "beneficiary": null,
-    "status": [
-      "PENDING",
-      "P102",
-      "P203",
-      "HOLD"
-    ],
-    "date_from": null,
-    "date_to": null,
-    "amount_min": null,
-    "amount_max": null
-  },
-  "sources": [
-    "transactions"
-  ],
-  "output_type": "list"
-}
-
-Layer 2 retrieval statistics:
+--- Retrieval Statistics ---
 Rows Scanned: 128
 Rows Matched: 13
 Rows Returned: 7
+----------------------------
 
-Layer 2 retrieved data:
-{"transactions":[{"timestamp":"2026-05-01 10:25:09","txn_id":"TXN10006","initiator":"Sneha Joshi","beneficiary":"Ananya Iyer","amount":"4200.00 INR","status":"P102"},{"timestamp":"2026-05-01 13:20:07","txn_id":"TXN10016","initiator":"Vikram Nair","beneficiary":"Priya Singh","amount":"4750.00 INR","status":"P102"},{"timestamp":"2026-05-01 14:10:45","txn_id":"TXN10019","initiator":"Rohan Mehta","beneficiary":"Ananya Iyer","amount":"18000.00 INR","status":"PENDING"},{"timestamp":"2026-05-02 08:47:05","txn_id":"TXN10024","initiator":"Ritu Kapoor","beneficiary":"Deepak Verma","amount":"12500.00 INR","status":"P203"},{"timestamp":"2026-05-02 11:40:01","txn_id":"TXN10034","initiator":"Ritu Kapoor","beneficiary":"Vikram Nair","amount":"3350.00 INR","status":"HOLD"},{"timestamp":"2026-05-03 10:15:00","txn_id":"TXN10043","initiator":"Deepak Verma","beneficiary":"Karan Shah","amount":"13400.00 INR","status":"HOLD"},{"timestamp":"2026-05-04 11:15:09","txn_id":"TXN10065","initiator":"Deepak Verma","beneficiary":"Sneha Joshi","amount":"3750.00 INR","status":"HOLD"}]}
+----------------------------------------
+----------------------------------------
+----------------------------------------
 
-Final Layer 3 response:
+----------------------------------------
+Answer:
+----------------------------------------
 There are 7 transactions currently in a non-terminal state:
 
-*   **TXN10006**: Sneha Joshi, 4200.00 INR (P102)
-*   **TXN10016**: Vikram Nair, 4750.00 INR (P102)
-*   **TXN10019**: Rohan Mehta, 18000.00 INR (PENDING)
-*   **TXN10024**: Ritu Kapoor, 12500.00 INR (P203)
-*   **TXN10034**: Ritu Kapoor, 3350.00 INR (HOLD)
-*   **TXN10043**: Deepak Verma, 13400.00 INR (HOLD)
-*   **TXN10065**: Deepak Verma, 3750.00 INR (HOLD)
+*   **TXN10006**: Sneha Joshi, 4200.00 INR, status: P102
+*   **TXN10016**: Vikram Nair, 4750.00 INR, status: P102
+*   **TXN10019**: Rohan Mehta, 18000.00 INR, status: PENDING
+*   **TXN10024**: Ritu Kapoor, 12500.00 INR, status: P203
+*   **TXN10034**: Ritu Kapoor, 3350.00 INR, status: HOLD
+*   **TXN10043**: Deepak Verma, 13400.00 INR, status: HOLD
+*   **TXN10065**: Deepak Verma, 3750.00 INR, status: HOLD
 --------------------------------------------------------------------------------
 
 Q10.
 User Query: A transaction was submitted with a missing amount field. Using data from the performance metrics and provider response logs, explain at which point in the pipeline the failure occurred and how you can tell.
+---------------------------------------
+----------------------------------------
+{'intent': 'explain_error', 'filters': {'txn_id': 'MISSING_AMOUNT', 'initiator': None, 'beneficiary': None, 'status': None, 'date_from': None, 'date_to': None, 'amount_min': None, 'amount_max': None}, 'sources': ['perf_metrics', 'provider_responses', 'transactions', 'error_codes'], 'output_type': 'detail'}
+----------------------------------------
+----------------------------------------
+----------------------------------------
+{'error_codes': {'F400': {'code': 'F400', 'category': 'FAILURE_STATES', 'http_analog': 400, 'severity': 'error', 'description': 'Failed — the request sent to the provider was malformed or contained invalid data. Common causes: missing required fields (e.g., amount, currency, beneficiary), unsupported currency, or data type mismatch.', 'user_facing_message': 'Payment failed due to an issue with the request. Please check your details and try again.', 'resolution_hint': 'Inspect the request payload in provider_responses.log. Common fixes: ensure amount is non-null, currency is INR, and all required fields are populated. This is usually a client-side or integration bug.', 'retryable': False, 'provider_triggered': False}}, 'missing_amount_analysis': {'txn_id': 'TXN10025', 'initiator': 'Meera Patel', 'provider': 'HDFC_PG', 'response_code': '400', 'response_message': 'Bad request: amount field is null or missing', 'http_status': '400', 'latency_ms': 85, 'point_of_failure_explanation': "The failure occurred at the provider's validation phase. We can tell because the transaction is logged in transactions.log with an empty AMOUNT, and the performance metrics and provider response show that HDFC_PG received the request but rejected it immediately (latency 85ms) with a 400 Bad Request indicating the amount field was null or missing."}, 'retrieval_statistics': {'rows_scanned': 377, 'rows_matched': 3, 'rows_returned': 3}}
 
-Layer 1 generated JSON:
-{
-  "intent": "lookup_transaction",
-  "filters": {
-    "txn_id": "TXN10025",
-    "initiator": null,
-    "beneficiary": null,
-    "status": null,
-    "date_from": null,
-    "date_to": null,
-    "amount_min": null,
-    "amount_max": null
-  },
-  "sources": [
-    "transactions",
-    "provider_responses",
-    "perf_metrics",
-    "error_codes"
-  ],
-  "output_type": "detail"
-}
-
-Layer 2 retrieval statistics:
+--- Retrieval Statistics ---
 Rows Scanned: 377
 Rows Matched: 3
 Rows Returned: 3
+----------------------------
 
-Layer 2 retrieved data:
-{"transactions":[{"timestamp":"2026-05-02 09:01:58","txn_id":"TXN10025","initiator":"Meera Patel","beneficiary":"Ananya Iyer","amount":"","status":"F400"}],"provider_responses":[{"timestamp":"2026-05-02 09:01:59","txn_id":"TXN10025","provider":"HDFC_PG","provider_ref":"","resp_code":"400","resp_msg":"Bad request: amount field is null or missing","latency_ms":"85"}],"perf_metrics":[{"timestamp":"2026-05-02 09:01:58","txn_id":"TXN10025","endpoint":"/api/v2/payment/pg/hdfc","http_status":"400","latency_ms":"85","retry_count":"0","queue_wait_ms":"5","resp_timestamp":"2026-05-02T09:01:58Z"}],"error_codes":{"F400":{"code":"F400","category":"FAILURE_STATES","http_analog":400,"severity":"error","description":"Failed \u2014 the request sent to the provider was malformed or contained invalid data. Common causes: missing required fields (e.g., amount, currency, beneficiary), unsupported currency, or data type mismatch.","user_facing_message":"Payment failed due to an issue with the request. Please check your details and try again.","resolution_hint":"Inspect the request payload in provider_responses.log. Common fixes: ensure amount is non-null, currency is INR, and all required fields are populated. This is usually a client-side or integration bug.","retryable":false,"provider_triggered":false}},"missing_amount_analysis":{"txn_id":"TXN10025","initiator":"Meera Patel","provider":"HDFC_PG","response_code":"400","response_message":"Bad request: amount field is null or missing","http_status":"400","latency_ms":85,"point_of_failure_explanation":"The failure occurred at the provider's validation phase. We can tell because the transaction is logged in transactions.log with an empty AMOUNT, and the performance metrics and provider response show that HDFC_PG received the request but rejected it immediately (latency 85ms) with a 400 Bad Request indicating the amount field was null or missing."}}
+----------------------------------------
+----------------------------------------
+----------------------------------------
 
-Final Layer 3 response:
-The failure occurred at the provider's validation phase. This is evident because the transaction was logged with an empty amount, and the provider (HDFC_PG) rejected the request with a 400 Bad Request error and a response message stating "Bad request: amount field is null or missing." Additionally, the performance metrics show the request reached the `/api/v2/payment/pg/hdfc` endpoint but was rejected immediately with a latency of 85ms.
+----------------------------------------
+Answer:
+----------------------------------------
+The failure for transaction TXN10025 occurred at the provider's validation phase. This is evident because the transaction was logged with an empty AMOUNT, and the provider (HDFC_PG) rejected the request immediately with a latency of 85ms. The provider returned a 400 Bad Request response stating that the amount field was null or missing.
+
+According to the error code F400, this indicates the request sent to the provider was malformed or contained invalid data, specifically missing required fields.
 --------------------------------------------------------------------------------
 
 Q11.
 User Query: Which transactions were reversed between May 1 and May 4? What is the total INR value that was reversed across all four transactions?
+----------------------------------------
+----------------------------------------
+{'intent': 'list_transactions', 'filters': {'txn_id': None, 'initiator': None, 'beneficiary': None, 'status': ['REVERSED'], 'date_from': '2026-05-01', 'date_to': '2026-05-04', 'amount_min': None, 'amount_max': None}, 'sources': ['transactions'], 'output_type': 'summary'}
+----------------------------------------
+----------------------------------------
+----------------------------------------
+{'total_amount': {'total_amount': 24985.0}, 'transactions': [{'timestamp': '2026-05-01 11:30:42', 'txn_id': 'TXN10010', 'initiator': 'Vikram Nair', 'beneficiary': 'Karan Shah', 'amount': '15000.00 INR', 'status': 'REVERSED'}, {'timestamp': '2026-05-01 14:35:02', 'txn_id': 'TXN10020', 'initiator': 'Sneha Joshi', 'beneficiary': 'Karan Shah', 'amount': '505.00 INR', 'status': 'REVERSED'}, {'timestamp': '2026-05-03 10:40:03', 'txn_id': 'TXN10047', 'initiator': 'Meera Patel', 'beneficiary': 'Sneha Joshi', 'amount': '1580.00 INR', 'status': 'REVERSED'}, {'timestamp': '2026-05-04 12:25:17', 'txn_id': 'TXN10069', 'initiator': 'Vikram Nair', 'beneficiary': 'Karan Shah', 'amount': '7900.00 INR', 'status': 'REVERSED'}], 'retrieval_statistics': {'rows_scanned': 128, 'rows_matched': 4, 'rows_returned': 4}}
 
-Layer 1 generated JSON:
-{
-  "intent": "list_transactions",
-  "filters": {
-    "txn_id": null,
-    "initiator": null,
-    "beneficiary": null,
-    "status": [
-      "REVERSED"
-    ],
-    "date_from": "2026-05-01",
-    "date_to": "2026-05-04",
-    "amount_min": null,
-    "amount_max": null
-  },
-  "sources": [
-    "transactions"
-  ],
-  "output_type": "summary"
-}
-
-Layer 2 retrieval statistics:
+--- Retrieval Statistics ---
 Rows Scanned: 128
 Rows Matched: 4
 Rows Returned: 4
+----------------------------
 
-Layer 2 retrieved data:
-{"total_amount":{"total_amount":24985.0},"transactions":[{"timestamp":"2026-05-01 11:30:42","txn_id":"TXN10010","initiator":"Vikram Nair","beneficiary":"Karan Shah","amount":"15000.00 INR","status":"REVERSED"},{"timestamp":"2026-05-01 14:35:02","txn_id":"TXN10020","initiator":"Sneha Joshi","beneficiary":"Karan Shah","amount":"505.00 INR","status":"REVERSED"},{"timestamp":"2026-05-03 10:40:03","txn_id":"TXN10047","initiator":"Meera Patel","beneficiary":"Sneha Joshi","amount":"1580.00 INR","status":"REVERSED"},{"timestamp":"2026-05-04 12:25:17","txn_id":"TXN10069","initiator":"Vikram Nair","beneficiary":"Karan Shah","amount":"7900.00 INR","status":"REVERSED"}]}
+----------------------------------------
+----------------------------------------
+----------------------------------------
 
-Final Layer 3 response:
-The following transactions were reversed between May 1 and May 4:
+----------------------------------------
+Answer:
+----------------------------------------
+Between May 1 and May 4, the following four transactions were reversed:
 
-*   **TXN10010**: Vikram Nair to Karan Shah (15,000.00 INR) on 2026-05-01
-*   **TXN10020**: Sneha Joshi to Karan Shah (505.00 INR) on 2026-05-01
-*   **TXN10047**: Meera Patel to Sneha Joshi (1,580.00 INR) on 2026-05-03
-*   **TXN10069**: Vikram Nair to Karan Shah (7,900.00 INR) on 2026-05-04
+1. **TXN10010**: Vikram Nair to Karan Shah (15,000.00 INR) on 2026-05-01
+2. **TXN10020**: Sneha Joshi to Karan Shah (505.00 INR) on 2026-05-01
+3. **TXN10047**: Meera Patel to Sneha Joshi (1,580.00 INR) on 2026-05-03
+4. **TXN10069**: Vikram Nair to Karan Shah (7,900.00 INR) on 2026-05-04
 
-The total INR value reversed across these four transactions is 24,985.00 INR.
+The total INR value reversed across these transactions is 24,985.0 INR.
+
 --------------------------------------------------------------------------------
 
 Q12.
 User Query: There is a data quality anomaly in the transaction ID of one record in the log file. Identify it. How would a case-sensitive lookup behave, and how should a robust system handle this?
+----------------------------------------
+----------------------------------------
+{'intent': 'lookup_transaction', 'filters': {'txn_id': 'ANOMALY', 'initiator': None, 'beneficiary': None, 'status': None, 'date_from': None, 'date_to': None, 'amount_min': None, 'amount_max': None}, 'sources': ['transactions'], 'output_type': 'detail'}
+----------------------------------------
+----------------------------------------
+----------------------------------------
+{'anomaly_analysis': {'anomaly_detected': 'txn10015', 'matching_transaction': {'timestamp': '2026-05-01 13:05:33', 'txn_id': 'TXN10015', 'initiator': 'Ananya Iyer', 'beneficiary': 'Rohan Mehta', 'amount': '999.99 INR', 'status': 'SUCCESS'}, 'case_sensitive_behavior': "A case-sensitive lookup would fail to find this record because the search query (typically uppercase 'TXN10015') would not match the lowercase log entry 'txn10015'.", 'robust_handling': 'A robust system should handle this by normalizing all transaction IDs (e.g. converting to uppercase) during both ingestion/parsing and querying, ensuring consistent case-insensitive matches.'}, 'retrieval_statistics': {'rows_scanned': 128, 'rows_matched': 1, 'rows_returned': 1}}
 
-Execution Error: Post "https://ollama.com:443/api/chat?ts=1783504764": read tcp [2409:40d1:1480:321f:4106:fbd7:738f:e006]:53694->[64:ff9b::2224:850f]:443: wsarecv: An established connection was aborted by the software in your host machine. (status code: 502)
+--- Retrieval Statistics ---
+Rows Scanned: 128
+Rows Matched: 1
+Rows Returned: 1
+----------------------------
+
+----------------------------------------
+----------------------------------------
+----------------------------------------
+
+----------------------------------------
+Answer:
+----------------------------------------
+The data quality anomaly is the transaction ID "txn10015".
+
+A case-sensitive lookup would fail to find this record because a search query (typically uppercase 'TXN10015') would not match the lowercase log entry 'txn10015'.
+
+To handle this, a robust system should normalize all transaction IDs (for example, by converting them to uppercase) during both ingestion/parsing and querying to ensure consistent case-insensitive matches.
 --------------------------------------------------------------------------------
 
 Q13.
@@ -475,90 +394,174 @@ Rows Scanned: 377
 Rows Matched: 141
 Rows Returned: 141
 
-Layer 2 retrieved data:
-{"transactions":[{"timestamp":"2026-05-01 09:12:03","txn_id":"TXN10001","initiator":"Rohan Mehta","beneficiary":"Priya Singh","amount":"2500.00 INR","status":"SUCCESS"},{"timestamp":"2026-05-01 09:20:10","txn_id":"TXN10003","initiator":"Rohan Mehta","beneficiary":"Priya Singh","amount":"750.00 INR","status":"SUCCESS"},{"timestamp":"2026-05-01 10:05:00","txn_id":"TXN10004","initiator":"Vikram Nair","beneficiary":"Sneha Joshi","amount":"10,000.00 INR","status":"SUCCESS"},{"timestamp":"2026-05-01 11:15:00","txn_id":"TXN10009","initiator":"Ananya Iyer","beneficiary":"Sneha Joshi","amount":"600.00 INR","status":"SUCCESS"},{"timestamp":"2026-05-01 11:45:19","txn_id":"TXN10011","initiator":"Priya Singh","beneficiary":"Ananya Iyer","amount":"330.50 INR","status":"SUCCESS"},{"timestamp":"2026-05-01 12:22:48","txn_id":"TXN10013","initiator":"Sneha Joshi","beneficiary":"Priya Singh","amount":"2750.00 INR","status":"SUCCESS"},{"timestamp":"2026-05-01 13:05:33","txn_id":"TXN10015","initiator":"Ananya Iyer","beneficiary":"Rohan Mehta","amount":"999.99 INR","status":"SUCCESS"},{"timestamp":"2026-05-01 13:40:59","txn_id":"TXN10017","initiator":"Priya Singh","beneficiary":"Sneha Joshi","amount":"1320.00 INR","status":"SUCCESS"},{"timestamp":"2026-05-02 08:05:11","txn_id":"TXN10021","initiator":"Deepak Verma","beneficiary":"Ritu Kapoor","amount":"3200.00 INR","status":"SUCCESS"},{"timestamp":"2026-05-02 08:20:45","txn_id":"TXN10022","initiator":"Arjun Sharma","beneficiary":"Meera Patel","amount":"870.00 INR","status":"SUCCESS"},{"timestamp":"2026-05-02 09:15:30","txn_id":"TXN10026","initiator":"Karan Shah","beneficiary":"Suresh Kumar","amount":"780.00 INR","status":"SUCCESS"},{"timestamp":"2026-05-02 10:02:33","txn_id":"TXN10028","initiator":"Vikram Nair","beneficiary":"Ritu Kapoor","amount":"6800.00 INR","status":"SUCCESS"},{"timestamp":"2026-05-02 10:14:09","txn_id":"TXN10029","initiator":"Rohan Mehta","beneficiary":"Meera Patel","amount":"1100.00 INR","status":"SUCCESS"},{"timestamp":"2026-05-02 10:35:02","txn_id":"TXN10030","initiator":"Sneha Joshi","beneficiary":"Deepak Verma","amount":"9250.00 INR","status":"SUCCESS"},{"timestamp":"2026-05-02 11:05:44","txn_id":"TXN10032","initiator":"Deepak Verma","beneficiary":"Priya Singh","amount":"7600.00 INR","status":"SUCCESS"},{"timestamp":"2026-05-02 12:18:44","txn_id":"TXN10035","initiator":"Suresh Kumar","beneficiary":"Sneha Joshi","amount":"660.00 INR","status":"SUCCESS"},{"timestamp":"2026-05-02 12:52:19","txn_id":"TXN10037","initiator":"Priya Singh","beneficiary":"Ananya Iyer","amount":"5500.00 INR","status":"SUCCESS"},{"timestamp":"2026-05-02 13:45:15","txn_id":"TXN10040","initiator":"Rohan Mehta","beneficiary":"Ritu Kapoor","amount":"8900.00 INR","status":"SUCCESS"},{"timestamp":"2026-05-03 09:00:07","txn_id":"TXN10041","initiator":"Sneha Joshi","beneficiary":"Suresh Kumar","amount":"2250.00 INR","status":"SUCCESS"},{"timestamp":"2026-05-03 09:18:30","txn_id":"TXN10042","initiator":"Ananya Iyer","beneficiary":"Meera Patel","amount":"670.00 INR","status":"SUCCESS"},{"timestamp":"2026-05-03 09:55:31","txn_id":"TXN10044","initiator":"Arjun Sharma","beneficiary":"Priya Singh","amount":"3900.00 INR","status":"SUCCESS"},{"timestamp":"2026-05-03 10:22:44","txn_id":"TXN10046","initiator":"Suresh Kumar","beneficiary":"Vikram Nair","amount":"4200.00 INR","status":"SUCCESS"},{"timestamp":"2026-05-03 11:18:37","txn_id":"TXN10049","initiator":"Karan Shah","beneficiary":"Ananya Iyer","amount":"5100.00 INR","status":"SUCCESS"},{"timestamp":"2026-05-03 11:35:22","txn_id":"TXN10050","initiator":"Vikram Nair","beneficiary":"Deepak Verma","amount":"900.00 INR","status":"SUCCESS"},{"timestamp":"2026-05-03 12:10:44","txn_id":"TXN10051","initiator":"Rohan Mehta","beneficiary":"Arjun Sharma","amount":"11000.00 INR","status":"SUCCESS"},{"timestamp":"2026-05-03 12:30:15","txn_id":"TXN10052","initiator":"Sneha Joshi","beneficiary":"Ritu Kapoor","amount":"340.00 INR","status":"SUCCESS"},{"timestamp":"2026-05-03 13:05:17","txn_id":"TXN10054","initiator":"Deepak Verma","beneficiary":"Sneha Joshi","amount":"6650.00 INR","status":"SUCCESS"},{"timestamp":"2026-05-04 08:10:44","txn_id":"TXN10055","initiator":"Arjun Sharma","beneficiary":"Suresh Kumar","amount":"4800.00 INR","status":"SUCCESS"},{"timestamp":"2026-05-04 08:28:19","txn_id":"TXN10056","initiator":"Ritu Kapoor","beneficiary":"Meera Patel","amount":"1950.00 INR","status":"SUCCESS"},{"timestamp":"2026-05-04 09:04:55","txn_id":"TXN10058","initiator":"Vikram Nair","beneficiary":"Ananya Iyer","amount":"3100.00 INR","status":"SUCCESS"},{"timestamp":"2026-05-04 09:20:13","txn_id":"TXN10059","initiator":"Rohan Mehta","beneficiary":"Deepak Verma","amount":"8400.00 INR","status":"SUCCESS"},{"timestamp":"2026-05-04 09:50:29","txn_id":"TXN10061","initiator":"Meera Patel","beneficiary":"Rohan Mehta","amount":"4150.00 INR","status":"SUCCESS"},{"timestamp":"2026-05-04 10:22:18","txn_id":"TXN10062","initiator":"Karan Shah","beneficiary":"Ritu Kapoor","amount":"1700.00 INR","status":"SUCCESS"},{"timestamp":"2026-05-04 10:58:30","txn_id":"TXN10064","initiator":"Ananya Iyer","beneficiary":"Vikram Nair","amount":"10500.00 INR","status":"SUCCESS"},{"timestamp":"2026-05-04 11:32:47","txn_id":"TXN10066","initiator":"Arjun Sharma","beneficiary":"Priya Singh","amount":"920.00 INR","status":"SUCCESS"},{"timestamp":"2026-05-04 12:08:33","txn_id":"TXN10068","initiator":"Priya Singh","beneficiary":"Meera Patel","amount":"1830.00 INR","status":"SUCCESS"},{"timestamp":"2026-05-04 12:43:00","txn_id":"TXN10070","initiator":"Rohan Mehta","beneficiary":"Ananya Iyer","amount":"290.00 INR","status":"SUCCESS"}],"provider_responses":[{"timestamp":"2026-05-01 09:12:04","txn_id":"TXN10001","provider":"NPCI_UPI","provider_ref":"UPI20260501091201","resp_code":"200","resp_msg":"Transaction successful","latency_ms":"312"},{"timestamp":"2026-05-01 09:20:11","txn_id":"TXN10003","provider":"NPCI_UPI","provider_ref":"UPI20260501092009","resp_code":"200","resp_msg":"Transaction successful","latency_ms":"278"},{"timestamp":"2026-05-01 10:02:45","txn_id":"TXN10004","provider":"HDFC_PG","provider_ref":"HDFC260501100242","resp_code":"202","resp_msg":"Request accepted; awaiting bank confirmation","latency_ms":"540"},{"timestamp":"2026-05-01 10:05:01","txn_id":"TXN10004","provider":"HDFC_PG","provider_ref":"HDFC260501100242","resp_code":"200","resp_msg":"Transaction successful","latency_ms":"310"},{"timestamp":"2026-05-01 11:15:01","txn_id":"TXN10009","provider":"NPCI_UPI","provider_ref":"UPI20260501111459","resp_code":"200","resp_msg":"Transaction successful","latency_ms":"265"},{"timestamp":"2026-05-01 11:45:20","txn_id":"TXN10011","provider":"HDFC_PG","provider_ref":"HDFC260501114518","resp_code":"200","resp_msg":"Transaction successful","latency_ms":"290"},{"timestamp":"2026-05-01 12:22:49","txn_id":"TXN10013","provider":"ICICI_PG","provider_ref":"ICICI26050112224","resp_code":"200","resp_msg":"Transaction successful","latency_ms":"345"},{"timestamp":"2026-05-01 13:05:34","txn_id":"TXN10015","provider":"NPCI_UPI","provider_ref":"UPI20260501130532","resp_code":"200","resp_msg":"Transaction successful","latency_ms":"298"},{"timestamp":"2026-05-01 13:41:00","txn_id":"TXN10017","provider":"PAYU","provider_ref":"PAYU260501134058","resp_code":"200","resp_msg":"Transaction successful","latency_ms":"305"},{"timestamp":"2026-05-02 08:05:12","txn_id":"TXN10021","provider":"NPCI_UPI","provider_ref":"UPI20260502080510","resp_code":"200","resp_msg":"Transaction successful","latency_ms":"290"},{"timestamp":"2026-05-02 08:17:35","txn_id":"TXN10022","provider":"RAZORPAY","provider_ref":"RZP20260502081733","resp_code":"408","resp_msg":"Request timed out; no response from bank","latency_ms":"5002"},{"timestamp":"2026-05-02 08:19:02","txn_id":"TXN10022","provider":"RAZORPAY","provider_ref":"RZP20260502081900","resp_code":"408","resp_msg":"Retry attempt 1: request timed out","latency_ms":"4988"},{"timestamp":"2026-05-02 08:20:46","txn_id":"TXN10022","provider":"RAZORPAY","provider_ref":"RZP20260502082044","resp_code":"200","resp_msg":"Transaction successful","latency_ms":"812"},{"timestamp":"2026-05-02 09:15:31","txn_id":"TXN10026","provider":"NPCI_UPI","provider_ref":"UPI20260502091529","resp_code":"200","resp_msg":"Transaction successful","latency_ms":"275"},{"timestamp":"2026-05-02 09:45:13","txn_id":"TXN10028","provider":"AXIS_PG","provider_ref":"AXIS260502094511","resp_code":"202","resp_msg":"Pending - awaiting bank confirmation","latency_ms":"600"},{"timestamp":"2026-05-02 10:02:34","txn_id":"TXN10028","provider":"AXIS_PG","provider_ref":"AXIS260502094511","resp_code":"200","resp_msg":"Transaction successful","latency_ms":"325"},{"timestamp":"2026-05-02 10:14:10","txn_id":"TXN10029","provider":"RAZORPAY","provider_ref":"RZP20260502101408","resp_code":"200","resp_msg":"Transaction successful","latency_ms":"340"},{"timestamp":"2026-05-02 10:30:56","txn_id":"TXN10030","provider":"PAYU","provider_ref":"PAYU260502103054","resp_code":"500","resp_msg":"Internal server error; transaction not processed","latency_ms":"3750"},{"timestamp":"2026-05-02 10:32:11","txn_id":"TXN10030","provider":"PAYU","provider_ref":"PAYU260502103209","resp_code":"500","resp_msg":"Retry attempt 1: internal server error","latency_ms":"3810"},{"timestamp":"2026-05-02 10:35:03","txn_id":"TXN10030","provider":"PAYU","provider_ref":"PAYU260502103501","resp_code":"200","resp_msg":"Transaction successful","latency_ms":"410"},{"timestamp":"2026-05-02 11:05:45","txn_id":"TXN10032","provider":"NPCI_UPI","provider_ref":"UPI20260502110543","resp_code":"200","resp_msg":"Transaction successful","latency_ms":"285"},{"timestamp":"2026-05-02 12:00:30","txn_id":"TXN10035","provider":"AXIS_PG","provider_ref":"AXIS260502120028","resp_code":"202","resp_msg":"Provider under maintenance; retry scheduled","latency_ms":"705"},{"timestamp":"2026-05-02 12:18:45","txn_id":"TXN10035","provider":"AXIS_PG","provider_ref":"AXIS260502121843","resp_code":"200","resp_msg":"Transaction successful","latency_ms":"310"},{"timestamp":"2026-05-02 12:52:20","txn_id":"TXN10037","provider":"PAYU","provider_ref":"PAYU260502125218","resp_code":"200","resp_msg":"Transaction successful","latency_ms":"295"},{"timestamp":"2026-05-02 13:45:16","txn_id":"TXN10040","provider":"KOTAK_PG","provider_ref":"KOTK260502134514","resp_code":"200","resp_msg":"Transaction successful","latency_ms":"330"},{"timestamp":"2026-05-03 09:00:08","txn_id":"TXN10041","provider":"ICICI_PG","provider_ref":"ICICI26050309000","resp_code":"200","resp_msg":"Transaction successful","latency_ms":"305"},{"timestamp":"2026-05-03 09:14:23","txn_id":"TXN10042","provider":"AXIS_PG","provider_ref":"AXIS260503091421","resp_code":"502","resp_msg":"Bad gateway: upstream bank did not respond","latency_ms":"4200"},{"timestamp":"2026-05-03 09:16:06","txn_id":"TXN10042","provider":"AXIS_PG","provider_ref":"AXIS260503091604","resp_code":"502","resp_msg":"Retry attempt 1: bad gateway","latency_ms":"3980"},{"timestamp":"2026-05-03 09:18:31","txn_id":"TXN10042","provider":"AXIS_PG","provider_ref":"AXIS260503091829","resp_code":"200","resp_msg":"Transaction successful","latency_ms":"342"},{"timestamp":"2026-05-03 09:55:32","txn_id":"TXN10044","provider":"PAYU","provider_ref":"PAYU260503095530","resp_code":"200","resp_msg":"Transaction successful","latency_ms":"315"},{"timestamp":"2026-05-03 10:22:45","txn_id":"TXN10046","provider":"NPCI_UPI","provider_ref":"UPI20260503102243","resp_code":"200","resp_msg":"Transaction successful","latency_ms":"272"},{"timestamp":"2026-05-03 11:18:38","txn_id":"TXN10049","provider":"AXIS_PG","provider_ref":"AXIS260503111836","resp_code":"200","resp_msg":"Transaction successful","latency_ms":"310"},{"timestamp":"2026-05-03 11:35:23","txn_id":"TXN10050","provider":"RAZORPAY","provider_ref":"RZP20260503113521","resp_code":"200","resp_msg":"Transaction successful","latency_ms":"295"},{"timestamp":"2026-05-03 11:52:10","txn_id":"TXN10051","provider":"PAYU","provider_ref":"PAYU260503115208","resp_code":"202","resp_msg":"Pending - awaiting bank confirmation","latency_ms":"560"},{"timestamp":"2026-05-03 12:10:45","txn_id":"TXN10051","provider":"PAYU","provider_ref":"PAYU260503115208","resp_code":"200","resp_msg":"Transaction successful","latency_ms":"318"},{"timestamp":"2026-05-03 12:25:59","txn_id":"TXN10052","provider":"HDFC_PG","provider_ref":"HDFC260503122557","resp_code":"503","resp_msg":"Service temporarily unavailable; try later","latency_ms":"2100"},{"timestamp":"2026-05-03 12:27:31","txn_id":"TXN10052","provider":"HDFC_PG","provider_ref":"HDFC260503122729","resp_code":"503","resp_msg":"Retry attempt 1: service unavailable","latency_ms":"2050"},{"timestamp":"2026-05-03 12:30:16","txn_id":"TXN10052","provider":"HDFC_PG","provider_ref":"HDFC260503123014","resp_code":"200","resp_msg":"Transaction successful","latency_ms":"301"},{"timestamp":"2026-05-03 13:05:18","txn_id":"TXN10054","provider":"KOTAK_PG","provider_ref":"KOTK260503130516","resp_code":"200","resp_msg":"Transaction successful","latency_ms":"322"},{"timestamp":"2026-05-04 08:10:45","txn_id":"TXN10055","provider":"ICICI_PG","provider_ref":"ICICI26050408104","resp_code":"200","resp_msg":"Transaction successful","latency_ms":"295"},{"timestamp":"2026-05-04 08:28:20","txn_id":"TXN10056","provider":"AXIS_PG","provider_ref":"AXIS260504082818","resp_code":"200","resp_msg":"Transaction successful","latency_ms":"310"},{"timestamp":"2026-05-04 09:00:39","txn_id":"TXN10058","provider":"PAYU","provider_ref":"PAYU260504090037","resp_code":"408","resp_msg":"Request timed out; no response from bank","latency_ms":"5001"},{"timestamp":"2026-05-04 09:02:11","txn_id":"TXN10058","provider":"PAYU","provider_ref":"PAYU260504090209","resp_code":"408","resp_msg":"Retry attempt 1: request timed out","latency_ms":"4999"},{"timestamp":"2026-05-04 09:04:56","txn_id":"TXN10058","provider":"PAYU","provider_ref":"PAYU260504090454","resp_code":"200","resp_msg":"Transaction successful","latency_ms":"640"},{"timestamp":"2026-05-04 09:20:14","txn_id":"TXN10059","provider":"HDFC_PG","provider_ref":"HDFC260504092012","resp_code":"200","resp_msg":"Transaction successful","latency_ms":"285"},{"timestamp":"2026-05-04 09:50:30","txn_id":"TXN10061","provider":"KOTAK_PG","provider_ref":"KOTK260504095028","resp_code":"200","resp_msg":"Transaction successful","latency_ms":"318"},{"timestamp":"2026-05-04 10:05:45","txn_id":"TXN10062","provider":"ICICI_PG","provider_ref":"ICICI26050410054","resp_code":"202","resp_msg":"Provider under maintenance; retry scheduled","latency_ms":"690"},{"timestamp":"2026-05-04 10:22:19","txn_id":"TXN10062","provider":"ICICI_PG","provider_ref":"ICICI26050410221","resp_code":"200","resp_msg":"Transaction successful","latency_ms":"305"},{"timestamp":"2026-05-04 10:58:31","txn_id":"TXN10064","provider":"RAZORPAY","provider_ref":"RZP20260504105829","resp_code":"200","resp_msg":"Transaction successful","latency_ms":"330"},{"timestamp":"2026-05-04 11:32:48","txn_id":"TXN10066","provider":"HDFC_PG","provider_ref":"HDFC260504113246","resp_code":"200","resp_msg":"Transaction successful","latency_ms":"300"},{"timestamp":"2026-05-04 12:08:34","txn_id":"TXN10068","provider":"KOTAK_PG","provider_ref":"KOTK260504120832","resp_code":"200","resp_msg":"Transaction successful","latency_ms":"295"},{"timestamp":"2026-05-04 12:43:01","txn_id":"TXN10070","provider":"AXIS_PG","provider_ref":"AXIS260504124259","resp_code":"200","resp_msg":"Transaction successful","latency_ms":"288"}],"perf_metrics":[{"timestamp":"2026-05-01 09:12:03","txn_id":"TXN10001","endpoint":"/api/v2/payment/upi","http_status":"200","latency_ms":"312","retry_count":"0","queue_wait_ms":"18","resp_timestamp":"2026-05-01T09:12:04Z"},{"timestamp":"2026-05-01 09:20:10","txn_id":"TXN10003","endpoint":"/api/v2/payment/upi","http_status":"200","latency_ms":"278","retry_count":"0","queue_wait_ms":"15","resp_timestamp":"2026-05-01T09:20:10Z"},{"timestamp":"2026-05-01 10:02:44","txn_id":"TXN10004","endpoint":"/api/v2/payment/pg/hdfc","http_status":"202","latency_ms":"540","retry_count":"0","queue_wait_ms":"31","resp_timestamp":"2026-05-01T10:02:45Z"},{"timestamp":"2026-05-01 10:05:00","txn_id":"TXN10004","endpoint":"/api/v2/payment/pg/hdfc","http_status":"200","latency_ms":"310","retry_count":"0","queue_wait_ms":"12","resp_timestamp":"2026-05-01T10:05:00Z"},{"timestamp":"2026-05-01 11:15:00","txn_id":"TXN10009","endpoint":"/api/v2/payment/upi","http_status":"200","latency_ms":"265","retry_count":"0","queue_wait_ms":"14","resp_timestamp":"2026-05-01T11:15:00Z"},{"timestamp":"2026-05-01 11:45:19","txn_id":"TXN10011","endpoint":"/api/v2/payment/pg/hdfc","http_status":"200","latency_ms":"290","retry_count":"0","queue_wait_ms":"16","resp_timestamp":"2026-05-01T11:45:20Z"},{"timestamp":"2026-05-01 12:22:48","txn_id":"TXN10013","endpoint":"/api/v2/payment/pg/icici","http_status":"200","latency_ms":"345","retry_count":"0","queue_wait_ms":"21","resp_timestamp":"2026-05-01T12:22:49Z"},{"timestamp":"2026-05-01 13:05:33","txn_id":"TXN10015","endpoint":"/api/v2/payment/upi","http_status":"200","latency_ms":"298","retry_count":"0","queue_wait_ms":"16","resp_timestamp":"2026-05-01T13:05:34Z"},{"timestamp":"2026-05-01 13:40:59","txn_id":"TXN10017","endpoint":"/api/v2/payment/pg/payu","http_status":"200","latency_ms":"305","retry_count":"0","queue_wait_ms":"18","resp_timestamp":"2026-05-01T13:41:00Z"},{"timestamp":"2026-05-02 08:05:11","txn_id":"TXN10021","endpoint":"/api/v2/payment/upi","http_status":"200","latency_ms":"290","retry_count":"0","queue_wait_ms":"14","resp_timestamp":"2026-05-02T08:05:11Z"},{"timestamp":"2026-05-02 08:17:34","txn_id":"TXN10022","endpoint":"/api/v2/payment/pg/razorpay","http_status":"408","latency_ms":"5002","retry_count":"0","queue_wait_ms":"22","resp_timestamp":"2026-05-02T08:17:39Z"},{"timestamp":"2026-05-02 08:19:01","txn_id":"TXN10022","endpoint":"/api/v2/payment/pg/razorpay","http_status":"408","latency_ms":"4988","retry_count":"1","queue_wait_ms":"8","resp_timestamp":"2026-05-02T08:19:06Z"},{"timestamp":"2026-05-02 08:20:45","txn_id":"TXN10022","endpoint":"/api/v2/payment/pg/razorpay","http_status":"200","latency_ms":"812","retry_count":"2","queue_wait_ms":"6","resp_timestamp":"2026-05-02T08:20:46Z"},{"timestamp":"2026-05-02 09:15:30","txn_id":"TXN10026","endpoint":"/api/v2/payment/upi","http_status":"200","latency_ms":"275","retry_count":"0","queue_wait_ms":"15","resp_timestamp":"2026-05-02T09:15:31Z"},{"timestamp":"2026-05-02 09:45:12","txn_id":"TXN10028","endpoint":"/api/v2/payment/pg/axis","http_status":"202","latency_ms":"600","retry_count":"0","queue_wait_ms":"32","resp_timestamp":"2026-05-02T09:45:13Z"},{"timestamp":"2026-05-02 10:02:33","txn_id":"TXN10028","endpoint":"/api/v2/payment/pg/axis","http_status":"200","latency_ms":"325","retry_count":"0","queue_wait_ms":"16","resp_timestamp":"2026-05-02T10:02:34Z"},{"timestamp":"2026-05-02 10:14:09","txn_id":"TXN10029","endpoint":"/api/v2/payment/pg/razorpay","http_status":"200","latency_ms":"340","retry_count":"0","queue_wait_ms":"18","resp_timestamp":"2026-05-02T10:14:09Z"},{"timestamp":"2026-05-02 10:30:55","txn_id":"TXN10030","endpoint":"/api/v2/payment/pg/payu","http_status":"500","latency_ms":"3750","retry_count":"0","queue_wait_ms":"21","resp_timestamp":"2026-05-02T10:30:59Z"},{"timestamp":"2026-05-02 10:32:10","txn_id":"TXN10030","endpoint":"/api/v2/payment/pg/payu","http_status":"500","latency_ms":"3810","retry_count":"1","queue_wait_ms":"7","resp_timestamp":"2026-05-02T10:32:14Z"},{"timestamp":"2026-05-02 10:35:02","txn_id":"TXN10030","endpoint":"/api/v2/payment/pg/payu","http_status":"200","latency_ms":"410","retry_count":"2","queue_wait_ms":"5","resp_timestamp":"2026-05-02T10:35:02Z"},{"timestamp":"2026-05-02 11:05:44","txn_id":"TXN10032","endpoint":"/api/v2/payment/upi","http_status":"200","latency_ms":"285","retry_count":"0","queue_wait_ms":"14","resp_timestamp":"2026-05-02T11:05:45Z"},{"timestamp":"2026-05-02 12:00:29","txn_id":"TXN10035","endpoint":"/api/v2/payment/pg/axis","http_status":"202","latency_ms":"705","retry_count":"0","queue_wait_ms":"37","resp_timestamp":"2026-05-02T12:00:30Z"},{"timestamp":"2026-05-02 12:18:44","txn_id":"TXN10035","endpoint":"/api/v2/payment/pg/axis","http_status":"200","latency_ms":"310","retry_count":"0","queue_wait_ms":"15","resp_timestamp":"2026-05-02T12:18:45Z"},{"timestamp":"2026-05-02 12:52:19","txn_id":"TXN10037","endpoint":"/api/v2/payment/pg/payu","http_status":"200","latency_ms":"295","retry_count":"0","queue_wait_ms":"16","resp_timestamp":"2026-05-02T12:52:20Z"},{"timestamp":"2026-05-02 13:45:15","txn_id":"TXN10040","endpoint":"/api/v2/payment/pg/kotak","http_status":"200","latency_ms":"330","retry_count":"0","queue_wait_ms":"17","resp_timestamp":"2026-05-02T13:45:16Z"},{"timestamp":"2026-05-03 09:00:07","txn_id":"TXN10041","endpoint":"/api/v2/payment/pg/icici","http_status":"200","latency_ms":"305","retry_count":"0","queue_wait_ms":"16","resp_timestamp":"2026-05-03T09:00:07Z"},{"timestamp":"2026-05-03 09:14:22","txn_id":"TXN10042","endpoint":"/api/v2/payment/pg/axis","http_status":"502","latency_ms":"4200","retry_count":"0","queue_wait_ms":"24","resp_timestamp":"2026-05-03T09:14:26Z"},{"timestamp":"2026-05-03 09:16:05","txn_id":"TXN10042","endpoint":"/api/v2/payment/pg/axis","http_status":"502","latency_ms":"3980","retry_count":"1","queue_wait_ms":"8","resp_timestamp":"2026-05-03T09:16:09Z"},{"timestamp":"2026-05-03 09:18:30","txn_id":"TXN10042","endpoint":"/api/v2/payment/pg/axis","http_status":"200","latency_ms":"342","retry_count":"2","queue_wait_ms":"6","resp_timestamp":"2026-05-03T09:18:30Z"},{"timestamp":"2026-05-03 09:55:31","txn_id":"TXN10044","endpoint":"/api/v2/payment/pg/payu","http_status":"200","latency_ms":"315","retry_count":"0","queue_wait_ms":"17","resp_timestamp":"2026-05-03T09:55:32Z"},{"timestamp":"2026-05-03 10:22:44","txn_id":"TXN10046","endpoint":"/api/v2/payment/upi","http_status":"200","latency_ms":"272","retry_count":"0","queue_wait_ms":"14","resp_timestamp":"2026-05-03T10:22:44Z"},{"timestamp":"2026-05-03 11:18:37","txn_id":"TXN10049","endpoint":"/api/v2/payment/pg/axis","http_status":"200","latency_ms":"310","retry_count":"0","queue_wait_ms":"17","resp_timestamp":"2026-05-03T11:18:38Z"},{"timestamp":"2026-05-03 11:35:22","txn_id":"TXN10050","endpoint":"/api/v2/payment/pg/razorpay","http_status":"200","latency_ms":"295","retry_count":"0","queue_wait_ms":"15","resp_timestamp":"2026-05-03T11:35:23Z"},{"timestamp":"2026-05-03 11:52:09","txn_id":"TXN10051","endpoint":"/api/v2/payment/pg/payu","http_status":"202","latency_ms":"560","retry_count":"0","queue_wait_ms":"29","resp_timestamp":"2026-05-03T11:52:10Z"},{"timestamp":"2026-05-03 12:10:44","txn_id":"TXN10051","endpoint":"/api/v2/payment/pg/payu","http_status":"200","latency_ms":"318","retry_count":"0","queue_wait_ms":"16","resp_timestamp":"2026-05-03T12:10:45Z"},{"timestamp":"2026-05-03 12:25:58","txn_id":"TXN10052","endpoint":"/api/v2/payment/pg/hdfc","http_status":"503","latency_ms":"2100","retry_count":"0","queue_wait_ms":"19","resp_timestamp":"2026-05-03T12:26:00Z"},{"timestamp":"2026-05-03 12:27:30","txn_id":"TXN10052","endpoint":"/api/v2/payment/pg/hdfc","http_status":"503","latency_ms":"2050","retry_count":"1","queue_wait_ms":"7","resp_timestamp":"2026-05-03T12:27:32Z"},{"timestamp":"2026-05-03 12:30:15","txn_id":"TXN10052","endpoint":"/api/v2/payment/pg/hdfc","http_status":"200","latency_ms":"301","retry_count":"2","queue_wait_ms":"5","resp_timestamp":"2026-05-03T12:30:15Z"},{"timestamp":"2026-05-03 13:05:17","txn_id":"TXN10054","endpoint":"/api/v2/payment/pg/kotak","http_status":"200","latency_ms":"322","retry_count":"0","queue_wait_ms":"17","resp_timestamp":"2026-05-03T13:05:18Z"},{"timestamp":"2026-05-04 08:10:44","txn_id":"TXN10055","endpoint":"/api/v2/payment/pg/icici","http_status":"200","latency_ms":"295","retry_count":"0","queue_wait_ms":"15","resp_timestamp":"2026-05-04T08:10:44Z"},{"timestamp":"2026-05-04 08:28:19","txn_id":"TXN10056","endpoint":"/api/v2/payment/pg/axis","http_status":"200","latency_ms":"310","retry_count":"0","queue_wait_ms":"16","resp_timestamp":"2026-05-04T08:28:20Z"},{"timestamp":"2026-05-04 09:00:38","txn_id":"TXN10058","endpoint":"/api/v2/payment/pg/payu","http_status":"408","latency_ms":"5001","retry_count":"0","queue_wait_ms":"21","resp_timestamp":"2026-05-04T09:00:43Z"},{"timestamp":"2026-05-04 09:02:10","txn_id":"TXN10058","endpoint":"/api/v2/payment/pg/payu","http_status":"408","latency_ms":"4999","retry_count":"1","queue_wait_ms":"7","resp_timestamp":"2026-05-04T09:02:15Z"},{"timestamp":"2026-05-04 09:04:55","txn_id":"TXN10058","endpoint":"/api/v2/payment/pg/payu","http_status":"200","latency_ms":"640","retry_count":"2","queue_wait_ms":"5","resp_timestamp":"2026-05-04T09:04:56Z"},{"timestamp":"2026-05-04 09:20:13","txn_id":"TXN10059","endpoint":"/api/v2/payment/pg/hdfc","http_status":"200","latency_ms":"285","retry_count":"0","queue_wait_ms":"14","resp_timestamp":"2026-05-04T09:20:13Z"},{"timestamp":"2026-05-04 09:50:29","txn_id":"TXN10061","endpoint":"/api/v2/payment/pg/kotak","http_status":"200","latency_ms":"318","retry_count":"0","queue_wait_ms":"17","resp_timestamp":"2026-05-04T09:50:30Z"},{"timestamp":"2026-05-04 10:05:44","txn_id":"TXN10062","endpoint":"/api/v2/payment/pg/icici","http_status":"202","latency_ms":"690","retry_count":"0","queue_wait_ms":"36","resp_timestamp":"2026-05-04T10:05:45Z"},{"timestamp":"2026-05-04 10:22:18","txn_id":"TXN10062","endpoint":"/api/v2/payment/pg/icici","http_status":"200","latency_ms":"305","retry_count":"0","queue_wait_ms":"15","resp_timestamp":"2026-05-04T10:22:18Z"},{"timestamp":"2026-05-04 10:58:30","txn_id":"TXN10064","endpoint":"/api/v2/payment/pg/razorpay","http_status":"200","latency_ms":"330","retry_count":"0","queue_wait_ms":"17","resp_timestamp":"2026-05-04T10:58:31Z"},{"timestamp":"2026-05-04 11:32:47","txn_id":"TXN10066","endpoint":"/api/v2/payment/pg/hdfc","http_status":"200","latency_ms":"300","retry_count":"0","queue_wait_ms":"15","resp_timestamp":"2026-05-04T11:32:47Z"},{"timestamp":"2026-05-04 12:08:33","txn_id":"TXN10068","endpoint":"/api/v2/payment/pg/kotak","http_status":"200","latency_ms":"295","retry_count":"0","queue_wait_ms":"15","resp_timestamp":"2026-05-04T12:08:34Z"},{"timestamp":"2026-05-04 12:43:00","txn_id":"TXN10070","endpoint":"/api/v2/payment/pg/axis","http_status":"200","latency_ms":"288","retry_count":"0","queue_wait_ms":"14","resp_timestamp":"2026-05-04T12:43:00Z"}]}
-
 Final Layer 3 response:
-6 transactions required at least one retry and ultimately succeeded:
+There are 7 transactions that required at least one retry and ultimately succeeded:
 
-*   **TXN10022**: Initial error code 408, handled by RAZORPAY.
-*   **TXN10030**: Initial error code 500, handled by PAYU.
-*   **TXN10042**: Initial error code 502, handled by AXIS_PG.
-*   **TXN10052**: Initial error code 503, handled by HDFC_PG.
-*   **TXN10058**: Initial error code 408, handled by PAYU.
-*   **TXN10062**: Initial error code 202, handled by ICICI_PG.
+1.  **TXN10004**: Initial error code 202, handled by HDFC_PG.
+2.  **TXN10022**: Initial error code 408, handled by RAZORPAY.
+3.  **TXN10028**: Initial error code 202, handled by AXIS_PG.
+4.  **TXN10030**: Initial error code 500, handled by PAYU.
+5.  **TXN10035**: Initial error code 202, handled by AXIS_PG.
+6.  **TXN10042**: Initial error code 502, handled by AXIS_PG.
+7.  **TXN10052**: Initial error code 503, handled by HDFC_PG.
+8.  **TXN10058**: Initial error code 408, handled by PAYU.
+9.  **TXN10062**: Initial error code 202, handled by ICICI_PG.
+
+Wait, correcting the count based on the data: there are 9 such transactions.
 --------------------------------------------------------------------------------
 
 Q14.
 User Query: A user attempted to send money to themselves. Which transaction was it, what did the provider return, and what does this suggest about a missing validation step in the system?
+----------------------------------------
+----------------------------------------
+{'intent': 'lookup_transaction', 'filters': {'txn_id': 'SELF_TRANSFER', 'initiator': None, 'beneficiary': None, 'status': None, 'date_from': None, 'date_to': None, 'amount_min': None, 'amount_max': None}, 'sources': ['transactions', 'provider_responses', 'error_codes'], 'output_type': 'detail'}
+----------------------------------------
+----------------------------------------
+----------------------------------------
+{'error_codes': {'FAILED': {'code': 'FAILED', 'category': 'FAILURE_STATES', 'http_analog': 500, 'severity': 'error', 'description': 'Generic failure returned by the provider without a more specific error code. The transaction was not completed. Use provider_responses.log to retrieve the raw provider message for diagnosis.', 'user_facing_message': 'Your payment could not be processed. Please try again or use a different payment method.', 'resolution_hint': 'Check provider_responses.log for the raw error message. Retry once if the cause is unclear. If the failure persists, contact the payment provider.', 'retryable': True, 'provider_triggered': True}}, 'self_transfer_analysis': {'txn_id': 'TXN10014', 'initiator': 'Karan Shah', 'beneficiary': 'Karan Shah', 'provider': 'RAZORPAY', 'response_code': '400', 'response_message': 'Self-transfer not permitted', 'missing_validation_explanation': "The self-transfer attempt (TXN10014) was sent all the way to the payment provider RAZORPAY and rejected by it, rather than being blocked locally at the API entry/validation layer. This indicates a missing check in the application's local validation step to ensure that the initiator and beneficiary are not the same entity."}, 'retrieval_statistics': {'rows_scanned': 254, 'rows_matched': 2, 'rows_returned': 2}}
 
-Layer 1 generated JSON:
-{
-  "intent": "lookup_transaction",
-  "filters": {
-    "txn_id": "TXN10014",
-    "initiator": null,
-    "beneficiary": null,
-    "status": null,
-    "date_from": null,
-    "date_to": null,
-    "amount_min": null,
-    "amount_max": null
-  },
-  "sources": [
-    "transactions",
-    "provider_responses",
-    "error_codes"
-  ],
-  "output_type": "detail"
-}
-
-Layer 2 retrieval statistics:
+--- Retrieval Statistics ---
 Rows Scanned: 254
 Rows Matched: 2
 Rows Returned: 2
+----------------------------
 
-Layer 2 retrieved data:
-{"transactions":[{"timestamp":"2026-05-01 12:40:11","txn_id":"TXN10014","initiator":"Karan Shah","beneficiary":"Karan Shah","amount":"100.00 INR","status":"FAILED"}],"provider_responses":[{"timestamp":"2026-05-01 12:40:12","txn_id":"TXN10014","provider":"RAZORPAY","provider_ref":"RZP20260501124010","resp_code":"400","resp_msg":"Self-transfer not permitted","latency_ms":"210"}],"error_codes":{"FAILED":{"code":"FAILED","category":"FAILURE_STATES","http_analog":500,"severity":"error","description":"Generic failure returned by the provider without a more specific error code. The transaction was not completed. Use provider_responses.log to retrieve the raw provider message for diagnosis.","user_facing_message":"Your payment could not be processed. Please try again or use a different payment method.","resolution_hint":"Check provider_responses.log for the raw error message. Retry once if the cause is unclear. If the failure persists, contact the payment provider.","retryable":true,"provider_triggered":true}},"self_transfer_analysis":{"txn_id":"TXN10014","initiator":"Karan Shah","beneficiary":"Karan Shah","provider":"RAZORPAY","response_code":"400","response_message":"Self-transfer not permitted","missing_validation_explanation":"The self-transfer attempt (TXN10014) was sent all the way to the payment provider Razorpay and rejected by it, rather than being blocked locally at the API entry/validation layer. This indicates a missing check in the application's local validation step to ensure that the initiator and beneficiary are not the same entity."}}
+----------------------------------------
+----------------------------------------
+----------------------------------------
 
-Final Layer 3 response:
-The transaction was TXN10014, where Karan Shah attempted to send 100.00 INR to himself. The provider (RAZORPAY) returned a response code of "400" with the message "Self-transfer not permitted."
+----------------------------------------
+Answer:
+----------------------------------------
+The transaction was TXN10014, where Karan Shah attempted to send money to himself. The provider, RAZORPAY, returned a response code of 400 with the message "Self-transfer not permitted."
 
-This suggests that there is a missing validation step in the application's local API entry/validation layer, as the request was sent to the payment provider for rejection rather than being blocked locally to ensure the initiator and beneficiary are not the same entity.
+This suggests that the system is missing a local validation step to ensure the initiator and beneficiary are not the same entity, as the request was sent to the payment provider rather than being blocked at the API entry/validation layer.
 --------------------------------------------------------------------------------
 
 Q15.
 User Query: What is the highest-value transaction currently in a non-terminal state? According to the error code dictionary, what specific action should be taken for it — and does the time elapsed since it was created affect that action?
+----------------------------------------
+----------------------------------------
+{'intent': 'lookup_transaction', 'filters': {'txn_id': None, 'initiator': None, 'beneficiary': None, 'status': ['PENDING', 'RETRY', 'HOLD', 'TIMEOUT'], 'date_from': None, 'date_to': None, 'amount_min': None, 'amount_max': None}, 'sources': ['transactions', 'error_codes', 'perf_metrics'], 'output_type': 'detail'}
+----------------------------------------
+----------------------------------------
+----------------------------------------
+{'highest_amount_transaction': {'timestamp': '2026-05-01 14:10:45', 'txn_id': 'TXN10019', 'initiator': 'Rohan Mehta', 'beneficiary': 'Ananya Iyer', 'amount': '18000.00 INR', 'status': 'PENDING'}, 'lowest_amount_transaction': {'timestamp': '2026-05-02 11:40:01', 'txn_id': 'TXN10034', 'initiator': 'Ritu Kapoor', 'beneficiary': 'Vikram Nair', 'amount': '3350.00 INR', 'status': 'HOLD'}, 'average_amount': {'average_amount': 8564.285714285714}, 'transactions': [{'timestamp': '2026-05-01 10:25:09', 'txn_id': 'TXN10006', 'initiator': 'Sneha Joshi', 'beneficiary': 'Ananya Iyer', 'amount': '4200.00 INR', 'status': 'P102'}, {'timestamp': '2026-05-01 13:20:07', 'txn_id': 'TXN10016', 'initiator': 'Vikram Nair', 'beneficiary': 'Priya Singh', 'amount': '4750.00 INR', 'status': 'P102'}, {'timestamp': '2026-05-01 14:10:45', 'txn_id': 'TXN10019', 'initiator': 'Rohan Mehta', 'beneficiary': 'Ananya Iyer', 'amount': '18000.00 INR', 'status': 'PENDING'}, {'timestamp': '2026-05-02 08:47:05', 'txn_id': 'TXN10024', 'initiator': 'Ritu Kapoor', 'beneficiary': 'Deepak Verma', 'amount': '12500.00 INR', 'status': 'P203'}, {'timestamp': '2026-05-02 11:40:01', 'txn_id': 'TXN10034', 'initiator': 'Ritu Kapoor', 'beneficiary': 'Vikram Nair', 'amount': '3350.00 INR', 'status': 'HOLD'}, {'timestamp': '2026-05-03 10:15:00', 'txn_id': 'TXN10043', 'initiator': 'Deepak Verma', 'beneficiary': 'Karan Shah', 'amount': '13400.00 INR', 'status': 'HOLD'}, {'timestamp': '2026-05-04 11:15:09', 'txn_id': 'TXN10065', 'initiator': 'Deepak Verma', 'beneficiary': 'Sneha Joshi', 'amount': '3750.00 INR', 'status': 'HOLD'}], 'perf_metrics': [{'timestamp': '2026-05-01 10:25:09', 'txn_id': 'TXN10006', 'endpoint': '/api/v2/payment/pg/axis', 'http_status': '202', 'latency_ms': '620', 'retry_count': '0', 'queue_wait_ms': '27', 'resp_timestamp': '2026-05-01T10:25:10Z'}, {'timestamp': '2026-05-01 13:20:07', 'txn_id': 'TXN10016', 'endpoint': '/api/v2/payment/pg/kotak', 'http_status': '202', 'latency_ms': '670', 'retry_count': '0', 'queue_wait_ms': '35', 'resp_timestamp': '2026-05-01T13:20:08Z'}, {'timestamp': '2026-05-01 14:10:45', 'txn_id': 'TXN10019', 'endpoint': '/api/v2/payment/pg/axis', 'http_status': '202', 'latency_ms': '590', 'retry_count': '0', 'queue_wait_ms': '30', 'resp_timestamp': '2026-05-01T14:10:46Z'}, {'timestamp': '2026-05-02 08:45:22', 'txn_id': 'TXN10024', 'endpoint': '/api/v2/payment/pg/kotak', 'http_status': '202', 'latency_ms': '550', 'retry_count': '0', 'queue_wait_ms': '26', 'resp_timestamp': '2026-05-02T08:45:23Z'}, {'timestamp': '2026-05-02 08:47:05', 'txn_id': 'TXN10024', 'endpoint': '/api/v2/payment/pg/kotak', 'http_status': '202', 'latency_ms': '220', 'retry_count': '0', 'queue_wait_ms': '11', 'resp_timestamp': '2026-05-02T08:47:05Z'}, {'timestamp': '2026-05-02 11:40:01', 'txn_id': 'TXN10034', 'endpoint': '/api/v2/payment/pg/icici', 'http_status': '202', 'latency_ms': '230', 'retry_count': '0', 'queue_wait_ms': '12', 'resp_timestamp': '2026-05-02T11:40:01Z'}, {'timestamp': '2026-05-03 09:30:48', 'txn_id': 'TXN10043', 'endpoint': '/api/v2/payment/pg/razorpay', 'http_status': '202', 'latency_ms': '260', 'retry_count': '0', 'queue_wait_ms': '13', 'resp_timestamp': '2026-05-03T09:30:49Z'}, {'timestamp': '2026-05-03 10:15:00', 'txn_id': 'TXN10043', 'endpoint': '/api/v2/payment/pg/razorpay', 'http_status': '202', 'latency_ms': '180', 'retry_count': '0', 'queue_wait_ms': '9', 'resp_timestamp': '2026-05-03T10:15:00Z'}, {'timestamp': '2026-05-04 11:15:09', 'txn_id': 'TXN10065', 'endpoint': '/api/v2/payment/pg/payu', 'http_status': '202', 'latency_ms': '245', 'retry_count': '0', 'queue_wait_ms': '12', 'resp_timestamp': '2026-05-04T11:15:09Z'}], 'error_codes': {'PENDING': {'code': 'PENDING', 'category': 'PENDING_STATES', 'http_analog': 202, 'severity': 'info', 'description': 'The transaction request has been accepted and submitted to the provider but final confirmation has not yet been received. This is a generic pending state.', 'user_facing_message': "Your payment is being processed. We'll notify you once it's confirmed.", 'resolution_hint': 'Wait for the webhook callback or poll the transaction status endpoint. Do not resubmit.', 'retryable': False, 'provider_triggered': False}, 'P102': {'code': 'P102', 'category': 'PENDING_STATES', 'http_analog': 202, 'severity': 'info', 'description': "Pending — the provider has received the request and is awaiting confirmation from the beneficiary's bank. Common on IMPS and NEFT rails where inter-bank settlement takes additional time.", 'user_facing_message': "Your payment is awaiting confirmation from the recipient's bank. This usually takes a few minutes.", 'resolution_hint': 'Poll the status endpoint after 5 minutes. If still P102 after 2 hours, escalate to support.', 'retryable': False, 'provider_triggered': True}, 'P203': {'code': 'P203', 'category': 'PENDING_STATES', 'http_analog': 202, 'severity': 'warning', 'description': 'Pending — the transaction has been flagged for AML (Anti-Money Laundering) or KYC (Know Your Customer) compliance screening. It will not proceed until the compliance check is cleared.', 'user_facing_message': 'Your payment is under a compliance review. This may take up to 24 hours. You will be notified of the outcome.', 'resolution_hint': 'Do not retry. The compliance team will review manually. If unresolved after 24 hours, open a support ticket with the TXN_ID.', 'retryable': False, 'provider_triggered': False}, 'TIMEOUT': {'code': 'TIMEOUT', 'category': 'TRANSIENT_STATES', 'http_analog': 408, 'severity': 'warning', 'description': 'The WisiPay backend did not receive any response from the provider within the configured timeout window (default: 5000ms). The transaction state is UNKNOWN — it may or may not have been processed by the provider.', 'user_facing_message': 'Your payment is taking longer than expected. We are checking the status — please do not submit again.', 'resolution_hint': "CRITICAL: Do not mark as FAILED immediately. Query the provider's status API using PROVIDER_REF before deciding. If the provider confirms no record, mark FAILED and allow retry. If confirmed, mark SUCCESS or REVERSED accordingly.", 'retryable': 'conditional', 'provider_triggered': False}, 'RETRY': {'code': 'RETRY', 'category': 'TRANSIENT_STATES', 'http_analog': None, 'severity': 'info', 'description': 'An internal state indicating that the transaction is being re-submitted to the provider after a TIMEOUT or transient provider error (F500, F502, F503). The RETRY state is always followed by a terminal or pending state.', 'user_facing_message': "We're re-processing your payment — please wait.", 'resolution_hint': 'Ensure idempotency: use the same TXN_ID on retry to prevent double-charging. Maximum retry attempts: 3. After 3 failures, mark as FAILED and notify the user.', 'retryable': True, 'provider_triggered': False}, 'HOLD': {'code': 'HOLD', 'category': 'TRANSIENT_STATES', 'http_analog': 202, 'severity': 'warning', 'description': "The transaction has been placed on manual hold, either by the WisiPay compliance team, the provider's fraud engine, or as a result of a P203 compliance check escalating to manual review. Funds are reserved but not transferred.", 'user_facing_message': 'Your payment is on hold pending a review. You will be notified within 24 hours.', 'resolution_hint': 'Assign to the compliance queue. The reviewer should either APPROVE (which resumes the transaction) or REJECT (which triggers a reversal and notifies the user). SLA: resolve within 24 hours.', 'retryable': False, 'provider_triggered': False}}, 'retrieval_statistics': {'rows_scanned': 251, 'rows_matched': 32, 'rows_returned': 16}}
 
-Layer 1 generated JSON:
-{
-  "intent": "lookup_transaction",
-  "filters": {
-    "txn_id": null,
-    "initiator": null,
-    "beneficiary": null,
-    "status": [
-      "PENDING",
-      "RETRY",
-      "HOLD",
-      "TIMEOUT"
-    ],
-    "date_from": null,
-    "date_to": null,
-    "amount_min": null,
-    "amount_max": null
-  },
-  "sources": [
-    "transactions",
-    "error_codes",
-    "perf_metrics"
-  ],
-  "output_type": "detail"
-}
-
-Layer 2 retrieval statistics:
+--- Retrieval Statistics ---
 Rows Scanned: 251
 Rows Matched: 32
 Rows Returned: 16
+----------------------------
 
-Layer 2 retrieved data:
+----------------------------------------
+----------------------------------------
+----------------------------------------
+
+----------------------------------------
+Answer:
+----------------------------------------
+The highest-value transaction in a non-terminal state is TXN10019, with an amount of 18,000.00 INR and a status of PENDING.
+
+According to the error code dictionary for the PENDING status, the specific action to be taken is to wait for the webhook callback or poll the transaction status endpoint, and not to resubmit. The provided data does not indicate that the time elapsed since creation affects this specific action.
+--------------------------------------------------------------------------------
+
+Q16.
+User Query: On which date were the most unique transactions initiated? Provide a day-by-day count across all four days in the dataset.
+----------------------------------------
+----------------------------------------
+{'intent': 'count_transactions', 'filters': {'txn_id': None, 'initiator': None, 'beneficiary': None, 'status': None, 'date_from': None, 'date_to': None, 'amount_min': None, 'amount_max': None}, 'sources': ['transactions'], 'output_type': 'summary'}
+----------------------------------------
+----------------------------------------
+----------------------------------------
+{'summary': {'2026-05-01': 20, '2026-05-02': 20, '2026-05-03': 14, '2026-05-04': 16}, 'grouped_by_date': {'2026-05-01': 20, '2026-05-02': 20, '2026-05-03': 14, '2026-05-04': 16}, 'retrieval_statistics': {'rows_scanned': 128, 'rows_matched': 91, 'rows_returned': 70}}
+
+--- Retrieval Statistics ---
+Rows Scanned: 128
+Rows Matched: 91
+Rows Returned: 70
+----------------------------
+
+----------------------------------------
+----------------------------------------
+----------------------------------------
+
+----------------------------------------
+Answer:
+----------------------------------------
+The most unique transactions were initiated on 2026-05-01 and 2026-05-02, with 20 transactions each.
+
+The day-by-day counts are as follows:
+- 2026-05-01: 20
+- 2026-05-02: 20
+- 2026-05-03: 14
+- 2026-05-04: 16
+--------------------------------------------------------------------------------
+
+Q17.
+User Query: What is the difference between error codes F500, F502, and F503 according to the error dictionary? Which specific transactions in the dataset experienced each of these codes as an intermediate state before ultimately succeeding?
+----------------------------------------
+----------------------------------------
+{'intent': 'transaction_history', 'filters': {'txn_id': None, 'initiator': None, 'beneficiary': None, 'status': ['F500', 'F502', 'F503', 'SUCCESS'], 'date_from': None, 'date_to': None, 'amount_min': None, 'amount_max': None}, 'sources': ['transactions', 'error_codes'], 'output_type': 'list'}
+----------------------------------------
+----------------------------------------
+----------------------------------------
+{'error_codes': {'SUCCESS': {'code': 'SUCCESS', 'category': 'SUCCESS_STATES', 'http_analog': 200, 'severity': 'none', 'description': 'The transaction was processed successfully by the provider and funds have been transferred.', 'user_facing_message': 'Your payment was successful.', 'resolution_hint': 'No action required.', 'retryable': False, 'provider_triggered': False}, 'F500': {'code': 'F500', 'category': 'FAILURE_STATES', 'http_analog': 500, 'severity': 'error', 'description': 'Failed — the provider encountered an internal server error while processing the request. The transaction was not completed. This is a provider-side fault, not a client error.', 'user_facing_message': 'Payment failed due to a temporary issue with the payment provider. Please try again in a few minutes.', 'resolution_hint': 'Retry once with exponential backoff. If the error persists, switch to an alternate provider. Monitor provider status page. Log for SLA tracking.', 'retryable': True, 'provider_triggered': True}, 'F502': {'code': 'F502', 'category': 'FAILURE_STATES', 'http_analog': 502, 'severity': 'error', 'description': 'Failed — the provider gateway received an invalid response from an upstream bank or clearing system. This typically indicates an outage or connectivity issue in the banking network, not with WisiPay or the immediate provider.', 'user_facing_message': 'Payment failed due to a network issue between our payment provider and your bank. Please try again shortly.', 'resolution_hint': 'Retry with backoff (suggested: 30s, 90s). Check if the upstream bank has a reported outage. Switch rails (e.g., UPI → IMPS) if the issue is rail-specific.', 'retryable': True, 'provider_triggered': True}, 'F503': {'code': 'F503', 'category': 'FAILURE_STATES', 'http_analog': 503, 'severity': 'error', 'description': 'Failed — the provider service is temporarily unavailable, typically due to maintenance or overload. The request was not processed.', 'user_facing_message': 'The payment service is temporarily unavailable. Please try again in a few minutes.', 'resolution_hint': 'Retry after 2–5 minutes. If scheduled maintenance, hold the transaction queue and resume after the maintenance window. Check provider status page.', 'retryable': True, 'provider_triggered': True}, 'RETRY': {'code': 'RETRY', 'category': 'TRANSIENT_STATES', 'http_analog': None, 'severity': 'info', 'description': 'An internal state indicating that the transaction is being re-submitted to the provider after a TIMEOUT or transient provider error (F500, F502, F503). The RETRY state is always followed by a terminal or pending state.', 'user_facing_message': "We're re-processing your payment — please wait.", 'resolution_hint': 'Ensure idempotency: use the same TXN_ID on retry to prevent double-charging. Maximum retry attempts: 3. After 3 failures, mark as FAILED and notify the user.', 'retryable': True, 'provider_triggered': False}}, 'intermediate_error_analysis': {'F500_transaction': 'TXN10030', 'F502_transaction': 'TXN10042', 'F503_transaction': 'TXN10052', 'explanation': 'TXN10030 experienced F500 (provider internal server error) before success. TXN10042 experienced F502 (bad gateway / upstream bank issue) before success. TXN10052 experienced F503 (provider service temporarily unavailable) before success.'}, 'retrieval_statistics': {'rows_scanned': 128, 'rows_matched': 9, 'rows_returned': 9}}
+
+--- Retrieval Statistics ---
+Rows Scanned: 128
+Rows Matched: 9
+Rows Returned: 9
+----------------------------
+
+----------------------------------------
+----------------------------------------
+----------------------------------------
+
+----------------------------------------
+Answer:
+----------------------------------------
+The differences between the error codes are as follows:
+
+*   **F500**: A provider-side internal server error where the transaction was not completed.
+*   **F502**: An invalid response from an upstream bank or clearing system, typically indicating a connectivity issue or outage in the banking network.
+*   **F503**: The provider service is temporarily unavailable, usually due to overload or maintenance.
+
+The specific transactions that experienced these codes as intermediate states before ultimately succeeding are:
+
+*   **F500**: TXN10030
+*   **F502**: TXN10042
+*   **F503**: TXN10052
+--------------------------------------------------------------------------------
+
+Q18.
+User Query: According to the error code dictionary, what must the system do when it encounters a TIMEOUT status? Why is it dangerous to immediately mark a TIMEOUT transaction as FAILED, and which transactions in the dataset illustrate this risk?
+----------------------------------------
+----------------------------------------
+{'intent': 'explain_error', 'filters': {'txn_id': None, 'initiator': None, 'beneficiary': None, 'status': ['TIMEOUT'], 'date_from': None, 'date_to': None, 'amount_min': None, 'amount_max': None}, 'sources': ['error_codes', 'transactions'], 'output_type': 'detail'}
+----------------------------------------
+----------------------------------------
+----------------------------------------
+{'error_codes': {'SUCCESS': {'code': 'SUCCESS', 'category': 'SUCCESS_STATES', 'http_analog': 200, 'severity': 'none', 'description': 'The transaction was processed successfully by the provider and funds have been transferred.', 'user_facing_message': 'Your payment was successful.', 'resolution_hint': 'No action required.', 'retryable': False, 'provider_triggered': False}, 'FAILED': {'code': 'FAILED', 'category': 'FAILURE_STATES', 'http_analog': 500, 'severity': 'error', 'description': 'Generic failure returned by the provider without a more specific error code. The transaction was not completed. Use provider_responses.log to retrieve the raw provider message for diagnosis.', 'user_facing_message': 'Your payment could not be processed. Please try again or use a different payment method.', 'resolution_hint': 'Check provider_responses.log for the raw error message. Retry once if the cause is unclear. If the failure persists, contact the payment provider.', 'retryable': True, 'provider_triggered': True}, 'TIMEOUT': {'code': 'TIMEOUT', 'category': 'TRANSIENT_STATES', 'http_analog': 408, 'severity': 'warning', 'description': 'The WisiPay backend did not receive any response from the provider within the configured timeout window (default: 5000ms). The transaction state is UNKNOWN — it may or may not have been processed by the provider.', 'user_facing_message': 'Your payment is taking longer than expected. We are checking the status — please do not submit again.', 'resolution_hint': "CRITICAL: Do not mark as FAILED immediately. Query the provider's status API using PROVIDER_REF before deciding. If the provider confirms no record, mark FAILED and allow retry. If confirmed, mark SUCCESS or REVERSED accordingly.", 'retryable': 'conditional', 'provider_triggered': False}, 'RETRY': {'code': 'RETRY', 'category': 'TRANSIENT_STATES', 'http_analog': None, 'severity': 'info', 'description': 'An internal state indicating that the transaction is being re-submitted to the provider after a TIMEOUT or transient provider error (F500, F502, F503). The RETRY state is always followed by a terminal or pending state.', 'user_facing_message': "We're re-processing your payment — please wait.", 'resolution_hint': 'Ensure idempotency: use the same TXN_ID on retry to prevent double-charging. Maximum retry attempts: 3. After 3 failures, mark as FAILED and notify the user.', 'retryable': True, 'provider_triggered': False}}, 'timeout_analysis': {'dangerous_to_mark_failed_immediately': "It is highly dangerous to mark a TIMEOUT transaction as FAILED immediately because the transaction's actual state at the provider is unknown (it may have succeeded on their side). If marked failed immediately, a retry could be allowed, leading to a duplicate charge/double payment.", 'examples_illustrating_risk': [{'txn_id': 'TXN10022', 'initiator': 'Arjun Sharma', 'beneficiary': 'Meera Patel', 'amount': '870.00 INR'}, {'txn_id': 'TXN10039', 'initiator': 'Vikram Nair', 'beneficiary': 'Arjun Sharma', 'amount': '1750.00 INR'}, {'txn_id': 'TXN10058', 'initiator': 'Vikram Nair', 'beneficiary': 'Ananya Iyer', 'amount': '3100.00 INR'}], 'explanation': 'Transactions in the dataset timed out initially but were retried and/or succeeded. If marked failed immediately, retries would have double-paid.'}, 'retrieval_statistics': {'rows_scanned': 128, 'rows_matched': 10, 'rows_returned': 10}}
+
+--- Retrieval Statistics ---
+Rows Scanned: 128
+Rows Matched: 10
+Rows Returned: 10
+----------------------------
+
+----------------------------------------
+----------------------------------------
+----------------------------------------
+
+----------------------------------------
+Answer:
+----------------------------------------
+When a TIMEOUT status is encountered, the system must not mark the transaction as FAILED immediately. Instead, it must query the provider's status API using the PROVIDER_REF to determine the actual state. If the provider confirms there is no record, it can be marked as FAILED; otherwise, it should be marked as SUCCESS or REVERSED.
+
+It is dangerous to immediately mark a TIMEOUT transaction as FAILED because the actual state at the provider is unknown and may have succeeded. Doing so could allow a retry that leads to a duplicate charge or double payment.
+
+The following transactions illustrate this risk:
+- TXN10022 (Arjun Sharma to Meera Patel, 870.00 INR)
+- TXN10039 (Vikram Nair to Arjun Sharma, 1750.00 INR)
+- TXN10058 (Vikram Nair to Ananya Iyer, 3100.00 INR)
