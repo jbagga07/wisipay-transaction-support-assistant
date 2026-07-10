@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WisiPay Transaction Assistant</title>
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+
+<body>
+
+    <div class="app">
+
+        <!-- Header -->
+        <header class="header">
+            <h1>WisiPay Transaction Assistant</h1>
+            <p>Ask questions about transactions, errors and payment logs.</p>
+        </header>
+
+        <!-- Chat Messages -->
+        <main class="chat-container" id="chatContainer">
+
+            <div class="message bot">
+                <div class="message-content">
+               <span>👋 Welcome!</span><br>
+               <span>I'm WisiPay Assistant.</span><br>
+               <span>Ask me anything about transactions, payment failures, provider responses,
+               performance metrics, or error codes.</span>
+                </div>
+            </div>
+
+        </main>
+
+        <!-- Input Area -->
+        <footer class="input-area">
+
+            <textarea
+                id="questionInput"
+                placeholder="Ask a question..."
+                rows="2"></textarea>
+
+            <button id="sendButton">
+                Send
+            </button>
+
+        </footer>
+
+    </div>
+
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+
+</body>
+
+</html>
